@@ -1,25 +1,31 @@
 <script lang="ts">
-	import { TextInput } from '@svelteuidev/core';
+	import { TextInput, Button } from '@svelteuidev/core';
 	import { JobFetch } from '../../helpers';
 	import { formProps } from './store';
+	import { modalState } from '../../routes/store';
 
-	import type { JobItemProps } from '../../types';
 	import { jobList } from '../../routes/store';
 
 	const onSubmit = async () => {
-		const { must, include, exclude } = $formProps;
-
 		const results = await JobFetch({
-			must: must == '' ? null : must.split(','),
-			include: include == '' ? null : include.split(','),
-			exclude: exclude == '' ? null : exclude.split(',')
+			must: $formProps.must == '' ? null : $formProps.must.split(','),
+			include: $formProps.include == '' ? null : $formProps.include.split(','),
+			exclude: $formProps.exclude == '' ? null : $formProps.exclude.split(',')
 		});
 		$jobList.jobs = results?.info;
+
+		$modalState.opened = false;
+	};
+
+	const onClear = () => {
+		$formProps.must = '';
+		$formProps.include = '';
+		$formProps.exclude = '';
 	};
 </script>
 
 <div>
-	<form on:submit={onSubmit} class="content">
+	<div class="content">
 		<TextInput
 			label="Must have"
 			description="List keywords that the job title must have all of, as a list of comma separated strings"
@@ -35,12 +41,25 @@
 			description="List keywords that the title must not have any of, as a list of comma separated strings"
 			bind:value={$formProps.exclude}
 		/>
-		<button type="submit">Search</button>
-	</form>
+		<div class="actions">
+			<Button on:click={onClear}>Clear</Button>
+			<Button on:click={onSubmit}>Search</Button>
+		</div>
+	</div>
 </div>
 
 <style lang="scss">
 	div {
+		.content {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			.actions {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+			}
+		}
 		box-sizing: border-box;
 		border-radius: 10px;
 		padding: 10px;

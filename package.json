@@ -33,7 +33,6 @@
 	"dependencies": {
 		"@svelteuidev/composables": "^0.10.0",
 		"@svelteuidev/core": "^0.10.0",
-		"react-hook-form": "^7.43.6",
 		"sass": "^1.59.3"
 	}
 }

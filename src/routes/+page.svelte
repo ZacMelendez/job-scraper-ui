@@ -2,8 +2,8 @@
 	import { JobFetch } from '../helpers/';
 	import { JobItem, JobSearch } from '../components';
 	import { onMount } from 'svelte';
-	import type { JobItemProps } from '../types';
-	import { jobList } from './store';
+	import { jobList, modalState } from './store';
+	import { Modal, Button } from '@svelteuidev/core';
 
 	onMount(async () => {
 		const response = await JobFetch({
@@ -20,8 +20,20 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
+<Modal
+	opened={$modalState.opened}
+	on:close={() => ($modalState.opened = false)}
+	title="Introduce yourself!"
+>
+	<JobSearch />
+</Modal>
+
 <div class="job-items">
-	<JobSearch jobs={$jobList.jobs} />
+	<Button
+		on:click={() => {
+			$modalState.opened = true;
+		}}>Search Filters</Button
+	>
 	<p>Found {$jobList.jobs.length} items</p>
 	<ul>
 		{#each $jobList.jobs as item, i}
