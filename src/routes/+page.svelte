@@ -9,10 +9,15 @@
 		const response = await JobFetch({
 			must: [],
 			include: ['software', 'developer'],
-			exclude: ['manager', 'lead', 'principal']
+			exclude: ['manager', 'lead', 'principal'],
+			locations: []
 		});
 		$jobList.jobs = response?.info;
 	});
+
+	const buttonStyles = {
+		backgroundColor: '#d4dedb'
+	};
 </script>
 
 <svelte:head>
@@ -29,11 +34,14 @@
 </Modal>
 
 <div class="job-items">
-	<Button
+	<button
 		on:click={() => {
 			$modalState.opened = true;
-		}}>Search Filters</Button
+		}}
+		class="button"
 	>
+		Search Filters
+	</button>
 	<p>Found {$jobList.jobs.length} items</p>
 	<ul>
 		{#each $jobList.jobs as item, i}
@@ -46,7 +54,6 @@
 
 <style lang="scss">
 	.job-items {
-		box-sizing: border-box;
 		padding: 5px 15px;
 		ul {
 			margin: 0;
@@ -57,6 +64,20 @@
 			li {
 				list-style-type: none;
 			}
+		}
+	}
+	.button {
+		background-color: #d4dedb;
+		border: none;
+		padding: 10px 15px;
+		border-radius: 7px;
+		cursor: pointer;
+
+		transition: all 0.15s linear;
+
+		&:hover {
+			background-color: #c4caca;
+			transform: scale(1.015);
 		}
 	}
 </style>

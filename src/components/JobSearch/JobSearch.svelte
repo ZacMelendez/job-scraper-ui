@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TextInput, Button } from '@svelteuidev/core';
+	import { TextInput } from '@svelteuidev/core';
 	import { JobFetch } from '../../helpers';
 	import { formProps } from './store';
 	import { modalState } from '../../routes/store';
@@ -49,8 +49,8 @@
 			bind:value={$formProps.exclude}
 		/>
 		<div class="actions">
-			<Button on:click={onClear}>Clear</Button>
-			<Button on:click={onSubmit}>Search</Button>
+			<button class="button" on:click={onClear}>Clear</button>
+			<button class="button" on:click={onSubmit}>Search</button>
 		</div>
 	</div>
 </div>
@@ -65,6 +65,20 @@
 				display: flex;
 				flex-direction: row;
 				justify-content: space-between;
+				.button {
+					background-color: #d4dedb;
+					border: none;
+					padding: 10px 15px;
+					border-radius: 7px;
+					cursor: pointer;
+
+					transition: all 0.15s linear;
+
+					&:hover {
+						background-color: #c4caca;
+						transform: scale(1.015);
+					}
+				}
 			}
 		}
 		box-sizing: border-box;

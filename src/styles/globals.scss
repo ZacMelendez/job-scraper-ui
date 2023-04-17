@@ -4,9 +4,8 @@
 	--font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
 		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	--font-mono: 'Fira Mono', monospace;
-	--color-bg-0: rgb(92, 94, 95);
-	--color-bg-1: rgb(92, 94, 95);
-	--color-bg-2: rgb(92, 94, 95);
+	--color-bg-0: #b5a6a2;
+	--color-bg-2: #d1bfba;
 	--color-theme-1: #e08a35;
 	--color-theme-2: #4075a6;
 	--color-text: rgba(0, 0, 0, 0.7);
@@ -22,12 +21,7 @@ body {
 	background-attachment: fixed;
 	background-color: var(--color-bg-1);
 	background-size: 100vw 100vh;
-	background-image: linear-gradient(
-		180deg,
-		var(--color-bg-0) 0%,
-		var(--color-bg-1) 15%,
-		var(--color-bg-2) 50%
-	);
+	background-image: linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-2) 60%);
 }
 
 h1,
@@ -104,4 +98,10 @@ button:focus:not(:focus-visible) {
 	position: absolute;
 	width: 1px;
 	white-space: nowrap;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
