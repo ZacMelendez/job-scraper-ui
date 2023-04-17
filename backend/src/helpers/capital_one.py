@@ -16,7 +16,7 @@ page_count: int = 15
 
 
 async def getJobCount(client: aiohttp.ClientSession) -> int:
-    logger.info("getting job count for Capitol One")
+    logger.info("getting job count for Capital One")
     async with client.get(URL.format(page=1), ssl=ssl.SSLContext()) as response:
         content = await response.json()
         soup = BeautifulSoup(content["results"], features="html.parser")
@@ -30,11 +30,11 @@ async def getJobCount(client: aiohttp.ClientSession) -> int:
         return jobs_count
 
 
-async def getCapitolOneJobs(client: aiohttp.ClientSession) -> List[List[JobItem]]:
+async def getCapitalOneJobs(client: aiohttp.ClientSession) -> List[List[JobItem]]:
     jobs_count = await getJobCount(client)
     jobs: List[List[JobItem]] = []
     logger.info(
-        "fetching jobs on {} pages for Capitol One".format(
+        "fetching jobs on {} pages for Capital One".format(
             round(jobs_count / page_count)
         )
     )
@@ -44,13 +44,13 @@ async def getCapitolOneJobs(client: aiohttp.ClientSession) -> List[List[JobItem]
             for i in range(round(jobs_count / page_count))
         ]
     )
-    logger.info("finished fetching jobs for Capitol One")
+    logger.info("finished fetching jobs for Capital One")
     return jobs
 
 
 async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobItem]:
     jobs: List[JobItem] = []
-    logger.debug(f"fetching Capitol One jobs on page {page}")
+    logger.debug(f"fetching Capital One jobs on page {page}")
     async with client.get(
         URL.format(page=page, page_count=page_count), ssl=ssl.SSLContext()
     ) as response:
@@ -66,13 +66,18 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                     title_search = job.find("h2")
                     if title_search:
                         title = title_search.text
+                    location = ""
+                    location_search = job.find("span", "job-location")
+                    if location_search:
+                        location = location_search.text
                     if title != "":
                         jobs.append(
                             {
-                                "company": "Capitol One",
+                                "company": "Capital One",
                                 "job_id": job_id,
                                 "title": title,
                                 "url": f"https://www.capitalonecareers.com{href}",
+                                "location": location,
                             }
                         )
                 except Exception as e:

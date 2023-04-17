@@ -10,7 +10,8 @@
 		const results = await JobFetch({
 			must: $formProps.must == '' ? null : $formProps.must.split(','),
 			include: $formProps.include == '' ? null : $formProps.include.split(','),
-			exclude: $formProps.exclude == '' ? null : $formProps.exclude.split(',')
+			exclude: $formProps.exclude == '' ? null : $formProps.exclude.split(','),
+			locations: $formProps.locations == '' ? null : $formProps.locations.split(',')
 		});
 		$jobList.jobs = results?.info;
 
@@ -21,6 +22,7 @@
 		$formProps.must = '';
 		$formProps.include = '';
 		$formProps.exclude = '';
+		$formProps.locations = '';
 	};
 </script>
 
@@ -35,6 +37,11 @@
 			label="Include"
 			description="List keywords that the job title can have at least one of, as a list of comma separated strings"
 			bind:value={$formProps.include}
+		/>
+		<TextInput
+			label="Locations"
+			description="List locations in which the job posting should be in, as a list of comma separated strings"
+			bind:value={$formProps.locations}
 		/>
 		<TextInput
 			label="Exclude"

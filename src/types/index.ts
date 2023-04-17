@@ -3,10 +3,12 @@ export interface JobItemProps {
 	job_id: string;
 	title: string;
 	url: string;
+	location: string;
 }
 
 export interface JobSearchProps {
 	must: string[];
 	include: string[];
 	exclude: string[];
+	location: string[];
 }

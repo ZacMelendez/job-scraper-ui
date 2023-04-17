@@ -7,6 +7,7 @@
 	<a target="_blank" href={job.url} rel="noreferrer">
 		<h3>{job.title}</h3>
 		<h5>{job.company}</h5>
+		<h5>{job.location}</h5>
 	</a>
 </div>
 

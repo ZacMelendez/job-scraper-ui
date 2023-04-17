@@ -64,6 +64,13 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                     title = ""
                     job_id = ""
                     href = ""
+                    location = ""
+
+                    location_search = job.find("div", "location-value")
+
+                    if location_search:
+                        location = location_search.text
+
                     if len(title_search):
                         job_tile = title_search[0]
 
@@ -78,6 +85,7 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                                 "job_id": job_id,
                                 "title": title,
                                 "url": f"https://careers.paramount.com{href}",
+                                "location": location,
                             }
                         )
                 except Exception as e:

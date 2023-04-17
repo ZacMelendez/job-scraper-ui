@@ -48,7 +48,11 @@ def flatten(list: List[List[T]]) -> List[T]:
 
 
 def filterJobs(
-    jobs: List[List[JobItem]], include: List[str], exclude: List[str], must: List[str]
+    jobs: List[List[JobItem]],
+    include: List[str],
+    exclude: List[str],
+    must: List[str],
+    locations: List[str],
 ) -> List[JobItem]:
     """
     Filters the list of job items based on the given criteria.
@@ -80,6 +84,14 @@ def filterJobs(
                 False
                 if not len(exclude)
                 else any(title.lower() in job["title"].lower() for title in exclude)
+            )
+            and (
+                True
+                if not len(locations)
+                else any(
+                    location.lower() in job["location"].lower()
+                    for location in locations
+                )
             ),
             flat,
         )
@@ -148,6 +160,7 @@ def lambda_handler(event: ApiGatewayEvent, context):
         include: List[str] = []
         exclude: List[str] = []
         must: List[str] = []
+        locations: List[str] = []
         store: bool = False
         if event["queryStringParameters"]:
             queries = event["queryStringParameters"]
@@ -157,13 +170,15 @@ def lambda_handler(event: ApiGatewayEvent, context):
                 exclude = [item.strip() for item in queries["exclude"].split(",")]
             if "must" in queries:
                 must = [item.strip() for item in queries["must"].split(",")]
+            if "locations" in queries:
+                locations = [item.strip() for item in queries["locations"].split(",")]
             if "store" in queries:
                 store = queries["store"].lower() == "true"
 
         start = time.perf_counter()
         jobs = asyncio.run(main(logger))
         end = time.perf_counter()
-        filtered_jobs = filterJobs(jobs, include, exclude, must)
+        filtered_jobs = filterJobs(jobs, include, exclude, must, locations)
 
         logger.info(f"found {len(filtered_jobs)} jobs in {end - start:0.4f} seconds")
 

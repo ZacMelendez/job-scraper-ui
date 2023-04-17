@@ -8,6 +8,7 @@ class JobItem(TypedDict):
     job_id: str
     title: str
     url: str
+    location: str
 
 
 class PathParameters(TypedDict):
