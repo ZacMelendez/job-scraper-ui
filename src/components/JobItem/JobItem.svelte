@@ -1,27 +1,25 @@
 <script lang="ts">
 	import type { JobItemProps } from '../../types';
+	import { fade } from 'svelte/transition';
+	import { linear } from 'svelte/easing';
 	export let job: JobItemProps;
 </script>
 
-<div>
+<div transition:fade={{ duration: 150, easing: linear }}>
 	<a target="_blank" href={job.url} rel="noreferrer">
 		<h3>{job.title}</h3>
-		<h5>{job.company}</h5>
-		<h5>{job.location}</h5>
+		<p class="company">{job.company}</p>
+		<p class="location">{job.location}</p>
 	</a>
 </div>
 
 <style lang="scss">
 	div {
-		* {
-			color: #2e2c3d;
-			padding: 2px 5px;
-		}
 		box-sizing: border-box;
-		border-radius: 2px;
-		padding: 10px;
-		background-image: linear-gradient(180deg, #e7ebea 0%, #d5d8d8 90%);
-		box-shadow: 2px 2px 10px #9696967d;
+		padding: 12px 15px;
+		background: #e7ebea;
+
+		transition: all linear 0.13s;
 
 		a {
 			&:link,
@@ -30,15 +28,25 @@
 			&:hover {
 				text-decoration: none;
 			}
+
+			&:hover {
+				h3 {
+					text-decoration: underline;
+				}
+			}
+			* {
+				color: #2e2c3d;
+				padding: 0;
+				margin: 0;
+			}
 		}
 
 		cursor: pointer;
 
-		transition: all ease-in-out 0.3s;
 		overflow: hidden;
 
 		&:hover {
-			transform: scale(1.01);
+			transform: scale(1.005);
 		}
 	}
 </style>

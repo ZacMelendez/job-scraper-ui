@@ -14,6 +14,7 @@
 			locations: $formProps.locations == '' ? null : $formProps.locations.split(',')
 		});
 		$jobList.jobs = results?.info;
+		$jobList.filteredJobs = results?.info;
 
 		$modalState.opened = false;
 	};
@@ -61,6 +62,7 @@
 			display: flex;
 			flex-direction: column;
 			gap: 15px;
+
 			.actions {
 				display: flex;
 				flex-direction: row;

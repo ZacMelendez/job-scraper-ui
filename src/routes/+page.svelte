@@ -3,7 +3,7 @@
 	import { JobItem, JobSearch } from '../components';
 	import { onMount } from 'svelte';
 	import { jobList, modalState } from './store';
-	import { Modal, Button } from '@svelteuidev/core';
+	import { Modal, TextInput } from '@svelteuidev/core';
 
 	onMount(async () => {
 		const response = await JobFetch({
@@ -13,38 +13,52 @@
 			locations: []
 		});
 		$jobList.jobs = response?.info;
+		$jobList.filteredJobs = response?.info;
 	});
 
-	const buttonStyles = {
-		backgroundColor: '#d4dedb'
+	const searchBooks = (props: any) => {
+		const { target } = props;
+		const data = target?.value;
+
+		if (!data || data == '') return ($jobList.filteredJobs = $jobList.jobs);
+		return ($jobList.filteredJobs = $jobList.jobs.filter((job) => {
+			let jobTitle = job.title.toLowerCase();
+			let jobLocation = job.location.toLowerCase();
+			let jobCompany = job.company.toLowerCase();
+
+			return (
+				jobTitle.includes(data.toLowerCase()) ||
+				jobLocation.includes(data.toLowerCase()) ||
+				jobCompany.includes(data.toLowerCase())
+			);
+		}));
 	};
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>Job Scraper</title>
+	<meta name="description" content="SvelteKit Job Scraper" />
 </svelte:head>
 
-<Modal
-	opened={$modalState.opened}
-	on:close={() => ($modalState.opened = false)}
-	title="Introduce yourself!"
->
+<Modal opened={$modalState.opened} on:close={() => ($modalState.opened = false)}>
 	<JobSearch />
 </Modal>
 
 <div class="job-items">
-	<button
-		on:click={() => {
-			$modalState.opened = true;
-		}}
-		class="button"
-	>
-		Search Filters
-	</button>
-	<p>Found {$jobList.jobs.length} items</p>
+	<div class="menu-bar">
+		<TextInput placeholder="Search..." bind:value={$jobList.jobSearch} on:input={searchBooks} />
+		<button
+			on:click={() => {
+				$modalState.opened = true;
+			}}
+			class="button"
+		>
+			Search Filters
+		</button>
+	</div>
+	<p>Found {$jobList.filteredJobs.length} items</p>
 	<ul>
-		{#each $jobList.jobs as item, i}
+		{#each $jobList.filteredJobs as item, i}
 			<li>
 				<JobItem job={item} />
 			</li>
@@ -55,14 +69,21 @@
 <style lang="scss">
 	.job-items {
 		padding: 5px 15px;
+		display: relative;
+		width: 100%;
 		ul {
 			margin: 0;
 			padding: 0;
 			display: flex;
 			flex-direction: column;
-			gap: 15px;
+			gap: 0px;
+			box-shadow: 3px 3px 55px rgba(0, 0, 0, 0.248);
+
 			li {
 				list-style-type: none;
+			}
+			li + li {
+				border-top: 1px solid rgb(212, 212, 212);
 			}
 		}
 	}
@@ -79,5 +100,12 @@
 			background-color: #c4caca;
 			transform: scale(1.015);
 		}
+	}
+	.menu-bar {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		align-items: center;
+		gap: 15px;
 	}
 </style>
