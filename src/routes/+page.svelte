@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { JobFetch } from '../helpers/';
-	import { JobItem, JobSearch } from '../components';
+	import { JobItem, JobSearch, Skeleton } from '../components';
 	import { onMount } from 'svelte';
 	import { jobList, modalState, userStore } from './store';
 	import { Modal, TextInput } from '@svelteuidev/core';
@@ -8,8 +8,11 @@
 	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
 	import { User, Filter } from 'lucide-svelte';
+	import { createSuspense, Suspense } from '@svelte-drama/suspense';
 
-	onMount(async () => {
+	// const suspend = createSuspense();
+
+	const fetchJobs = async () => {
 		const response = await JobFetch({
 			must: [],
 			include: ['software', 'developer'],
@@ -25,7 +28,9 @@
 
 		$userStore.favorites = $page.data.session?.user?.favorites || [];
 		$userStore.userId = $page.data.session?.user?.id || '';
-	});
+	};
+
+	// onMount(async () => {});
 
 	const searchJobs = (props: any) => {
 		const { target } = props;
@@ -72,19 +77,41 @@
 			<button class="button" on:click={() => signIn('google')}> <User size={16} />Sign In</button>
 		{/if}
 	</div>
-	<p>Found {$jobList.filteredJobs.length} items</p>
-	<ul class="job-list">
-		{#each $jobList.filteredJobs as item}
-			<li>
-				<JobItem
-					job={item}
-					favorite={$userStore.favorites.includes(
-						`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
-					)}
-				/>
-			</li>
-		{/each}
-	</ul>
+
+	<Suspense let:suspend on:error={(e) => console.error(e.detail)} on:load={() => {}}>
+		<div class="loading" slot="loading">
+			<ul>
+				{#each [...new Array(10)] as item}
+					<li class="loading-item">
+						<div class="skeleton-card-text" style="display: flex;flex-direction: row">
+							<div style="width: 40%">
+								<div class="skeleton skeleton-card-title" />
+								<div class="skeleton skeleton-card-brand" />
+								<div class="skeleton skeleton-card-brand" />
+							</div>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</div>
+		<p slot="error" let:error>Error: {error}</p>
+
+		{#await suspend(fetchJobs()) then Skeleton}
+			<p>Found {$jobList.filteredJobs.length} items</p>
+			{#each $jobList.filteredJobs as item}
+				<ul class="job-list">
+					<li>
+						<JobItem
+							job={item}
+							favorite={$userStore.favorites.includes(
+								`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
+							)}
+						/>
+					</li>
+				</ul>
+			{/each}
+		{/await}
+	</Suspense>
 </div>
 
 <style lang="scss">
@@ -137,5 +164,46 @@
 		align-items: center;
 		gap: 15px;
 		height: 50px;
+	}
+
+	.loading {
+		ul {
+			list-style-type: none;
+		}
+
+		.loading-item {
+			background: #e7ebea;
+			padding: 0 30px;
+		}
+		.skeleton {
+			border-radius: 0.25rem;
+			animation: skeleton-loading 1s linear infinite alternate;
+		}
+
+		.skeleton-card-brand {
+			width: 70%;
+			height: 0.7rem;
+			margin: 0.5rem;
+			border-radius: 0.25rem;
+		}
+
+		.skeleton-card-text {
+			padding: 10px;
+		}
+
+		.skeleton-card-title {
+			width: 100%;
+			height: 0.9rem;
+			margin: 0.5rem;
+		}
+
+		@keyframes skeleton-loading {
+			0% {
+				background-color: var(--skeleton-loader-dark);
+			}
+			100% {
+				background-color: var(--skeleton-loader-light);
+			}
+		}
 	}
 </style>

@@ -36,6 +36,7 @@
 		"@auth/sveltekit": "^0.3.0",
 		"@aws-sdk/client-dynamodb": "^3.315.0",
 		"@aws-sdk/util-dynamodb": "^3.315.0",
+		"@svelte-drama/suspense": "^0.3.10",
 		"@svelteuidev/composables": "^0.10.0",
 		"@svelteuidev/core": "^0.10.0",
 		"@types/node-fetch": "^2.6.3",

@@ -16,8 +16,6 @@
 		let newFavorites: string[] = [];
 		const job_id = `${job.company.toLowerCase().split(' ').join('-')}-${job.job_id}`;
 
-		console.log($userStore);
-
 		if (favorite) {
 			newFavorites = [...$userStore.favorites, job_id];
 
@@ -49,7 +47,7 @@
 		</button>
 	{/if}
 
-	<a target="_blank" href={job.url} rel="noreferrer">
+	<a target="_blank" href={job.url} rel="noreferrer" class="job-text">
 		<h3>{job.title}</h3>
 		<p class="company">{job.company}</p>
 
@@ -91,6 +89,7 @@
 				padding: 0;
 				margin: 0;
 			}
+			flex-grow: 1;
 		}
 
 		cursor: pointer;

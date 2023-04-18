@@ -1023,6 +1023,11 @@
   resolved "https://registry.yarnpkg.com/@stitches/core/-/core-1.2.8.tgz#dce3b8fdc764fbc6dbea30c83b73bfb52cf96173"
   integrity sha512-Gfkvwk9o9kE9r9XNBmJRfV8zONvXThnm1tcuojL04Uy5uRyqg93DC83lDebl0rocZCfKSjUv+fWYtMQmEDJldg==
 
+"@svelte-drama/suspense@^0.3.10":
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/@svelte-drama/suspense/-/suspense-0.3.10.tgz#5837a4ab558dad1b685bba101792570c9458dba2"
+  integrity sha512-K/amAHuU7QKCSA7JaQ6LYylBOyfUHbOXBa7nE6cTLUaLgeKttU9xWwHzVEYpDvR0yIu+GO3H5Cg2eETsMrdQ0A==
+
 "@sveltejs/adapter-auto@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sveltejs/adapter-auto/-/adapter-auto-2.0.0.tgz#902dba0c92e8c1d4b3128c53b370d6cc18f8f672"
