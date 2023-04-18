@@ -6,6 +6,12 @@
 
 	import { jobList } from '../../routes/store';
 
+	import type { JobItemProps } from '../../types';
+
+	const onlyUnique = (value: JobItemProps, index: number, array: JobItemProps[]) => {
+		return array.indexOf(value) === index;
+	};
+
 	const onSubmit = async () => {
 		const results = await JobFetch({
 			must: $formProps.must == '' ? null : $formProps.must.split(','),
@@ -13,8 +19,10 @@
 			exclude: $formProps.exclude == '' ? null : $formProps.exclude.split(','),
 			locations: $formProps.locations == '' ? null : $formProps.locations.split(',')
 		});
-		$jobList.jobs = results?.info;
-		$jobList.filteredJobs = results?.info;
+		// $jobList.jobs = results?.info.filter(onlyUnique);
+		const uniqueVals = [...new Map(results?.info.map((item) => [item['url'], item])).values()];
+		$jobList.jobs = uniqueVals;
+		$jobList.filteredJobs = uniqueVals;
 
 		$modalState.opened = false;
 	};

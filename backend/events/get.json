@@ -5,8 +5,7 @@
     "httpMethod": "GET",
     "isBase64Encoded": false,
     "queryStringParameters": {
-        "must": "full stack,associate",
-        "store": "true"
+        "must": "full stack,associate"
     },
     "pathParameters": {
         "proxy": "/path/to/resource"

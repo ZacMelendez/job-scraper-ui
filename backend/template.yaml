@@ -28,14 +28,26 @@ Resources:
             Method: GET
             Auth:
               ApiKeyRequired: true
-  DynamoDBTable:
+  UserFavorites:
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
-        - AttributeName: url
+        - AttributeName: user_id
           AttributeType: S
       KeySchema: 
-        - AttributeName: url
+        - AttributeName: user_id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+  Users:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: user_id
           KeyType: HASH
       ProvisionedThroughput: 
         ReadCapacityUnits: 1

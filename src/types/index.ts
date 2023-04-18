@@ -12,3 +12,11 @@ export interface JobSearchProps {
 	exclude: string[];
 	location: string[];
 }
+
+export interface UserProps {
+	user_id: string;
+	name: string;
+	email: string;
+	image: string;
+	favorites: string | string[];
+}

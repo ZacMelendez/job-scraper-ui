@@ -32,8 +32,16 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@auth/core": "^0.5.1",
+		"@auth/sveltekit": "^0.3.0",
+		"@aws-sdk/client-dynamodb": "^3.315.0",
+		"@aws-sdk/util-dynamodb": "^3.315.0",
 		"@svelteuidev/composables": "^0.10.0",
 		"@svelteuidev/core": "^0.10.0",
+		"@types/node-fetch": "^2.6.3",
+		"aws-sdk": "^2.1360.0",
+		"lucide-svelte": "^0.162.0",
+		"node-fetch": "2",
 		"radix-icons-svelte": "^1.2.1",
 		"sass": "^1.59.3"
 	}

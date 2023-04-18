@@ -202,7 +202,9 @@ def lambda_handler(event: ApiGatewayEvent, context):
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
             },
-            "body": json.dumps({"info": filtered_jobs}),
+            "body": json.dumps(
+                {"info": list({v["url"]: v for v in filtered_jobs}.values())}
+            ),
         }
     except Exception as e:
         logger.error(e)

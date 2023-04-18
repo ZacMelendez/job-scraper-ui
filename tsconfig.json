@@ -11,6 +11,7 @@
 		"strict": true,
 		"types": [
 			"unplugin-icons/types/svelte"
-		]
+		],
+		"ignoreDeprecations": "5.0"
 	}
 }

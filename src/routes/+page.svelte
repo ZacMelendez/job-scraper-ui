@@ -2,9 +2,12 @@
 	import { JobFetch } from '../helpers/';
 	import { JobItem, JobSearch } from '../components';
 	import { onMount } from 'svelte';
-	import { jobList, modalState } from './store';
+	import { jobList, modalState, userStore } from './store';
 	import { Modal, TextInput } from '@svelteuidev/core';
 	import { formProps } from '../components/JobSearch/store';
+	import { signIn, signOut } from '@auth/sveltekit/client';
+	import { page } from '$app/stores';
+	import { User, Filter } from 'lucide-svelte';
 
 	onMount(async () => {
 		const response = await JobFetch({
@@ -19,6 +22,9 @@
 
 		$jobList.jobs = response?.info;
 		$jobList.filteredJobs = response?.info;
+
+		$userStore.favorites = $page.data.session?.user?.favorites || [];
+		$userStore.userId = $page.data.session?.user?.id || '';
 	});
 
 	const searchBooks = (props: any) => {
@@ -58,14 +64,24 @@
 			}}
 			class="button"
 		>
-			Filters
+			<Filter size={16} />Filters
 		</button>
+		{#if Object.keys($page.data.session || {}).length}
+			<button class="button" on:click={() => signOut()}> <User size={16} />Sign out</button>
+		{:else}
+			<button class="button" on:click={() => signIn('google')}> <User size={16} />Sign In</button>
+		{/if}
 	</div>
 	<p>Found {$jobList.filteredJobs.length} items</p>
 	<ul class="job-list">
-		{#each $jobList.filteredJobs as item, i}
+		{#each $jobList.filteredJobs as item}
 			<li>
-				<JobItem job={item} />
+				<JobItem
+					job={item}
+					favorite={$userStore.favorites.includes(
+						`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
+					)}
+				/>
 			</li>
 		{/each}
 	</ul>
@@ -100,6 +116,11 @@
 		padding: 10px 15px;
 		border-radius: 7px;
 		cursor: pointer;
+
+		display: flex;
+		flex-direction: row;
+		gap: 5px;
+		align-items: center;
 
 		transition: all 0.15s linear;
 

@@ -11,6 +11,11 @@ export const jobList = writable<{
 	jobSearch: ''
 });
 
+export const userStore = writable<{ userId: string; favorites: string[] }>({
+	favorites: [],
+	userId: ''
+});
+
 export const modalState = writable({
 	opened: false
 });
