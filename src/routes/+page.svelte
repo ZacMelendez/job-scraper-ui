@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { jobList, modalState } from './store';
 	import { Modal, TextInput } from '@svelteuidev/core';
+	import { formProps } from '../components/JobSearch/store';
 
 	onMount(async () => {
 		const response = await JobFetch({
@@ -12,6 +13,10 @@
 			exclude: ['manager', 'lead', 'principal'],
 			locations: []
 		});
+
+		$formProps.include = 'software, developer';
+		$formProps.exclude = 'manager, lead, principal';
+
 		$jobList.jobs = response?.info;
 		$jobList.filteredJobs = response?.info;
 	});
