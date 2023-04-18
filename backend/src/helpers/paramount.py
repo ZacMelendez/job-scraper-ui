@@ -12,13 +12,13 @@ from .file_types import JobItem
 logger = logging.getLogger(__name__)
 
 page_count: int = 25
-URL = "https://careers.paramount.com/tile-search-results/?q=developer&startrow={start_row}&_=1678893069634"
+URL = "https://careers.paramount.com/tile-search-results/&startrow={start_row}&_=1678893069634"
 
 
 async def getJobCount(client: aiohttp.ClientSession) -> int:
     logger.info("getting job count for Paramount")
     async with client.get(
-        "https://careers.paramount.com/search/?createNewAlert=false&q=developer&locationsearch=&optionsFacetsDD_customfield1=&optionsFacetsDD_customfield2=&optionsFacetsDD_customfield3=",
+        "https://careers.paramount.com/search/?createNewAlert=false&locationsearch=&optionsFacetsDD_customfield1=&optionsFacetsDD_customfield2=&optionsFacetsDD_customfield3=",
         ssl=ssl.SSLContext(),
     ) as response:
         content = await response.text()
@@ -66,17 +66,19 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                     href = ""
                     location = ""
 
-                    location_search = job.find("div", "location-value")
-
-                    if location_search:
-                        location = location_search.text
-
                     if len(title_search):
                         job_tile = title_search[0]
 
                         title = job_tile.text.strip()
                         job_id = job_tile.attrs["data-focus-tile"].split("-")[-1]
                         href = job_tile.attrs["href"]
+                        location_search = job.select(
+                            f"div#job-{job_id}-tablet-section-location-value"
+                        )
+
+                        if len(location_search):
+                            location_item = location_search[0]
+                            location = location_item.text.strip()
 
                     if title != "":
                         jobs.append(
