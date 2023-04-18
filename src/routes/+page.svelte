@@ -58,11 +58,11 @@
 			}}
 			class="button"
 		>
-			Search Filters
+			Filters
 		</button>
 	</div>
 	<p>Found {$jobList.filteredJobs.length} items</p>
-	<ul>
+	<ul class="job-list">
 		{#each $jobList.filteredJobs as item, i}
 			<li>
 				<JobItem job={item} />
@@ -83,6 +83,8 @@
 			flex-direction: column;
 			gap: 0px;
 			box-shadow: 3px 3px 55px rgba(0, 0, 0, 0.248);
+			max-height: calc(100vh - 16px - 50px);
+			overflow-y: scroll;
 
 			li {
 				list-style-type: none;
@@ -109,8 +111,10 @@
 	.menu-bar {
 		display: flex;
 		flex-direction: row;
+		justify-content: space-between;
 		width: 100%;
 		align-items: center;
 		gap: 15px;
+		height: 50px;
 	}
 </style>
