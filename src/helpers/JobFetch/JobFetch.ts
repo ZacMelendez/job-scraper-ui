@@ -1,4 +1,3 @@
-import { onMount } from 'svelte';
 import type { JobItemProps } from '../../types';
 
 interface FetchResponse {

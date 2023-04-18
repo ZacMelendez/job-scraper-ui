@@ -27,7 +27,7 @@
 		$userStore.userId = $page.data.session?.user?.id || '';
 	});
 
-	const searchBooks = (props: any) => {
+	const searchJobs = (props: any) => {
 		const { target } = props;
 		const data = target?.value;
 
@@ -57,7 +57,7 @@
 
 <div class="job-items">
 	<div class="menu-bar">
-		<TextInput placeholder="Search..." bind:value={$jobList.jobSearch} on:input={searchBooks} />
+		<TextInput placeholder="Search..." bind:value={$jobList.jobSearch} on:input={searchJobs} />
 		<button
 			on:click={() => {
 				$modalState.opened = true;

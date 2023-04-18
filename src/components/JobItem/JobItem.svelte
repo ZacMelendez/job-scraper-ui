@@ -5,11 +5,10 @@
 	import { Star, MapPin } from 'lucide-svelte';
 	import { userStore } from '../../routes/store';
 	import { page } from '$app/stores';
-	import { onMount, validate_component } from 'svelte/internal';
 
 	export let job: JobItemProps;
-	export let favorite: boolean = false;
-	export const job_id: string = `${job.company.toLowerCase().split(' ').join('-')}-${job.job_id}`;
+	export let favorite = false;
+	export const job_id = `${job.company.toLowerCase().split(' ').join('-')}-${job.job_id}`;
 
 	const handleFavorite = async () => {
 		favorite = !favorite;

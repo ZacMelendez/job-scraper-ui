@@ -4,7 +4,6 @@ import { SECRET_GOOGLE_CLIENT_ID, SECRET_GOOGLE_CLIENT_SECRET, SECRET } from '$e
 import type { Provider } from '@auth/core/providers';
 import { getUser, newUser } from './helpers/UserDatabase';
 import type { UserProps } from './types';
-import { userStore } from './routes/store';
 
 const googleProvider = GoogleProvider({
 	clientId: SECRET_GOOGLE_CLIENT_ID,

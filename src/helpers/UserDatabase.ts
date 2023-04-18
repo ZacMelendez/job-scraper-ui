@@ -1,14 +1,12 @@
 import {
 	DynamoDBClient,
 	GetItemCommand,
-	ScanCommand,
 	PutItemCommand,
 	UpdateItemCommand
 } from '@aws-sdk/client-dynamodb';
-import fetch from 'node-fetch';
 import { unmarshall, marshall } from '@aws-sdk/util-dynamodb';
 import { SECRET_AWS_SECRET, SECRET_AWS_KEY, SECRET_USER_TABLE } from '$env/static/private';
-import type { JobItemProps, UserProps } from '../types';
+import type { UserProps } from '../types';
 
 const clientOptions = {
 	region: 'us-east-1',

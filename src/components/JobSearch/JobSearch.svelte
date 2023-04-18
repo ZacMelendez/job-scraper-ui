@@ -6,12 +6,6 @@
 
 	import { jobList } from '../../routes/store';
 
-	import type { JobItemProps } from '../../types';
-
-	const onlyUnique = (value: JobItemProps, index: number, array: JobItemProps[]) => {
-		return array.indexOf(value) === index;
-	};
-
 	const onSubmit = async () => {
 		const results = await JobFetch({
 			must: $formProps.must == '' ? null : $formProps.must.split(','),

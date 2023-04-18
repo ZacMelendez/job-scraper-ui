@@ -1,9 +1,8 @@
 import { updateFavorites } from '../helpers/UserDatabase';
-import { userStore } from './store';
 
 import { json } from '@sveltejs/kit';
 
-export async function POST({ request, cookies }) {
+export async function POST({ request }) {
 	const { user_id, favorites } = await request.json();
 
 	console.log(user_id, favorites);

@@ -9,9 +9,7 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"types": [
-			"unplugin-icons/types/svelte"
-		],
+		"types": ["unplugin-icons/types/svelte"],
 		"ignoreDeprecations": "5.0"
 	}
 }
