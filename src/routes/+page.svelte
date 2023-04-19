@@ -136,7 +136,7 @@
 			flex-direction: column;
 			gap: 0px;
 			box-shadow: 3px 3px 55px rgba(0, 0, 0, 0.248);
-			max-height: calc(100vh - 16px - 50px);
+			max-height: calc(100vh - 16px - 50px - 50px);
 			overflow-y: scroll;
 
 			li {
