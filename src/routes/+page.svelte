@@ -62,29 +62,40 @@
 
 <div class="job-items">
 	<div class="menu-bar">
-		<TextInput placeholder="Search..." bind:value={$jobList.jobSearch} on:input={searchJobs} />
-		<button
-			on:click={() => {
-				$modalState.opened = true;
-			}}
-			class="button"
-		>
-			<Filter size={16} />Filters
-		</button>
-		{#if Object.keys($page.data.session || {}).length}
-			<button class="button" on:click={() => signOut()}> <User size={16} />Sign out</button>
-		{:else}
-			<button class="button" on:click={() => signIn('google')}> <User size={16} />Sign In</button>
-		{/if}
+		<div class="search-bar">
+			<TextInput
+				class="search-bar"
+				placeholder="Search..."
+				bind:value={$jobList.jobSearch}
+				on:input={searchJobs}
+			/>
+		</div>
+		<div class="actions">
+			<button
+				on:click={() => {
+					$modalState.opened = true;
+				}}
+				class="button"
+			>
+				<Filter size={16} />Filters
+			</button>
+			{#if Object.keys($page.data.session || {}).length}
+				<button class="button" on:click={() => signOut()}> <User size={16} />Sign out</button>
+			{:else}
+				<button class="button" on:click={() => signIn('google')}> <User size={16} />Sign In</button>
+			{/if}
+		</div>
 	</div>
-
-	<Suspense let:suspend on:error={(e) => console.error(e.detail)} on:load={() => {}}>
-		<div class="loading" slot="loading">
-			<ul>
+	{#if $jobList.filteredJobs.length}
+		<p>Found {$jobList.filteredJobs.length} items</p>
+	{/if}
+	<ul class="job-list">
+		<Suspense let:suspend on:error={(e) => console.error(e.detail)} on:load={() => {}}>
+			<div class="loading" slot="loading">
 				{#each [...new Array(10)] as item}
 					<li class="loading-item">
 						<div class="skeleton-card-text" style="display: flex;flex-direction: row">
-							<div style="width: 40%">
+							<div class="skeleton-item">
 								<div class="skeleton skeleton-card-title" />
 								<div class="skeleton skeleton-card-brand" />
 								<div class="skeleton skeleton-card-brand" />
@@ -92,14 +103,11 @@
 						</div>
 					</li>
 				{/each}
-			</ul>
-		</div>
-		<p slot="error" let:error>Error: {error}</p>
-
-		{#await suspend(fetchJobs()) then Skeleton}
-			<p>Found {$jobList.filteredJobs.length} items</p>
-			{#each $jobList.filteredJobs as item}
-				<ul class="job-list">
+			</div>
+			<p slot="error" let:error>Error: {error}</p>
+			{#await suspend(fetchJobs()) then Skeleton}
+				{#each $jobList.filteredJobs as item}
+					<!-- <ul class="job-list"> -->
 					<li>
 						<JobItem
 							job={item}
@@ -108,13 +116,15 @@
 							)}
 						/>
 					</li>
-				</ul>
-			{/each}
-		{/await}
-	</Suspense>
+					<!-- </ul> -->
+				{/each}
+			{/await}
+		</Suspense>
+	</ul>
 </div>
 
 <style lang="scss">
+	@import '../styles/breakpoints.scss';
 	.job-items {
 		padding: 5px 15px;
 		display: relative;
@@ -164,6 +174,25 @@
 		align-items: center;
 		gap: 15px;
 		height: 50px;
+
+		.actions {
+			display: flex;
+			flex-direction: row;
+			gap: 15px;
+		}
+		.search-bar {
+			flex-grow: 1;
+			@include sm-max {
+				flex-grow: 1;
+			}
+		}
+
+		@include sm-max {
+			flex-direction: column;
+			align-items: flex-start;
+			height: auto;
+			gap: 5px;
+		}
 	}
 
 	.loading {
@@ -185,6 +214,9 @@
 			height: 0.7rem;
 			margin: 0.5rem;
 			border-radius: 0.25rem;
+			@include sm-max {
+				width: 40%;
+			}
 		}
 
 		.skeleton-card-text {
@@ -195,6 +227,13 @@
 			width: 100%;
 			height: 0.9rem;
 			margin: 0.5rem;
+		}
+
+		.skeleton-item {
+			width: 40%;
+			@include sm-max {
+				width: 90%;
+			}
 		}
 
 		@keyframes skeleton-loading {
