@@ -3,6 +3,7 @@
 	import { JobFetch } from '../../helpers';
 	import { formProps } from './store';
 	import { modalState } from '../../routes/store';
+	import { Button, Input, Label, Modal } from 'flowbite-svelte';
 
 	import { jobList } from '../../routes/store';
 
@@ -13,7 +14,7 @@
 			exclude: $formProps.exclude == '' ? null : $formProps.exclude.split(','),
 			locations: $formProps.locations == '' ? null : $formProps.locations.split(',')
 		});
-		// $jobList.jobs = results?.info.filter(onlyUnique);
+
 		const uniqueVals = [...new Map(results?.info.map((item) => [item['url'], item])).values()];
 		$jobList.jobs = uniqueVals;
 		$jobList.filteredJobs = uniqueVals;
@@ -29,64 +30,35 @@
 	};
 </script>
 
-<div>
-	<div class="content">
-		<TextInput
-			label="Must have"
-			description="List keywords that the job title must have all of, as a list of comma separated strings"
-			bind:value={$formProps.must}
-		/>
-		<TextInput
-			label="Include"
-			description="List keywords that the job title can have at least one of, as a list of comma separated strings"
-			bind:value={$formProps.include}
-		/>
-		<TextInput
-			label="Locations"
-			description="List locations in which the job posting should be in, as a list of comma separated strings"
-			bind:value={$formProps.locations}
-		/>
-		<TextInput
-			label="Exclude"
-			description="List keywords that the title must not have any of, as a list of comma separated strings"
-			bind:value={$formProps.exclude}
-		/>
-		<div class="actions">
-			<button class="button" on:click={onClear}>Clear</button>
-			<button class="button" on:click={onSubmit}>Search</button>
-		</div>
+<Modal title="Search Parameters" bind:open={$modalState.opened} autoclose>
+	<div>
+		<Label class="mb-2">Must Have</Label>
+		<p>List keywords that the job title must have all of, as a list of comma separated strings</p>
+		<Input bind:value={$formProps.must} />
 	</div>
-</div>
+	<div>
+		<Label class="mb-2">Include</Label>
+		<p>
+			List keywords that the job title can have at least one of, as a list of comma separated
+			strings
+		</p>
+		<Input bind:value={$formProps.include} />
+	</div>
+	<div>
+		<Label class="mb-2">Locations</Label>
+		<p>
+			List locations in which the job posting should be in, as a list of comma separated strings
+		</p>
+		<Input bind:value={$formProps.locations} />
+	</div>
+	<div>
+		<Label class="mb-2">Exclude</Label>
+		<p>List keywords that the title must not have any of, as a list of comma separated strings</p>
+		<Input bind:value={$formProps.exclude} />
+	</div>
 
-<style lang="scss">
-	div {
-		.content {
-			display: flex;
-			flex-direction: column;
-			gap: 15px;
-
-			.actions {
-				display: flex;
-				flex-direction: row;
-				justify-content: space-between;
-				.button {
-					background-color: #d4dedb;
-					border: none;
-					padding: 10px 15px;
-					border-radius: 7px;
-					cursor: pointer;
-
-					transition: all 0.15s linear;
-
-					&:hover {
-						background-color: #c4caca;
-						transform: scale(1.015);
-					}
-				}
-			}
-		}
-		box-sizing: border-box;
-		border-radius: 10px;
-		padding: 10px;
-	}
-</style>
+	<svelte:fragment slot="footer">
+		<Button color="light" on:click={onClear}>Clear</Button>
+		<Button color="light" on:click={onSubmit}>Search</Button>
+	</svelte:fragment>
+</Modal>

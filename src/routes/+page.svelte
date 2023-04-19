@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { JobFetch } from '../helpers/';
-	import { JobItem, JobSearch, Skeleton } from '../components';
-	import { onMount } from 'svelte';
+	import { JobItem, JobSearch } from '../components';
 	import { jobList, modalState, userStore } from './store';
-	import { Modal, TextInput } from '@svelteuidev/core';
+	import { Modal, Input, Button } from 'flowbite-svelte';
 	import { formProps } from '../components/JobSearch/store';
 	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
 	import { User, Filter } from 'lucide-svelte';
-	import { createSuspense, Suspense } from '@svelte-drama/suspense';
+	import { Suspense } from '@svelte-drama/suspense';
 
 	// const suspend = createSuspense();
 
@@ -56,14 +55,13 @@
 	<meta name="description" content="SvelteKit Job Scraper" />
 </svelte:head>
 
-<Modal opened={$modalState.opened} on:close={() => ($modalState.opened = false)}>
-	<JobSearch />
-</Modal>
+<JobSearch />
 
 <div class="job-items">
 	<div class="menu-bar">
 		<div class="search-bar">
-			<TextInput
+			<!-- <Input id="search" placeholder="Search"  /> -->
+			<Input
 				class="search-bar"
 				placeholder="Search..."
 				bind:value={$jobList.jobSearch}
@@ -71,23 +69,25 @@
 			/>
 		</div>
 		<div class="actions">
-			<button
+			<Button
 				on:click={() => {
 					$modalState.opened = true;
 				}}
-				class="button"
+				color="light"
 			>
 				<Filter size={16} />Filters
-			</button>
+			</Button>
 			{#if Object.keys($page.data.session || {}).length}
-				<button class="button" on:click={() => signOut()}> <User size={16} />Sign out</button>
+				<Button color="light" on:click={() => signOut()}><User size={16} />Sign out</Button>
 			{:else}
-				<button class="button" on:click={() => signIn('google')}> <User size={16} />Sign In</button>
+				<Button color="light" on:click={() => signIn('google')}><User size={16} />Sign In</Button>
 			{/if}
 		</div>
 	</div>
 	{#if $jobList.filteredJobs.length}
-		<p>Found {$jobList.filteredJobs.length} items</p>
+		<p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">
+			Found {$jobList.filteredJobs.length} items
+		</p>
 	{/if}
 	<ul class="job-list">
 		<Suspense let:suspend on:error={(e) => console.error(e.detail)} on:load={() => {}}>
@@ -135,35 +135,17 @@
 			display: flex;
 			flex-direction: column;
 			gap: 0px;
-			box-shadow: 3px 3px 55px rgba(0, 0, 0, 0.248);
+			// box-shadow: 3px 3px 55px rgba(0, 0, 0, 0.248);
 			max-height: calc(100vh - 16px - 50px - 50px);
 			overflow-y: scroll;
 
 			li {
 				list-style-type: none;
+				// border: 1px solid rgb(75, 85, 99);
 			}
-			li + li {
-				border-top: 1px solid rgb(212, 212, 212);
+			li {
+				border-bottom: 1px solid rgb(75, 85, 99);
 			}
-		}
-	}
-	.button {
-		background-color: #d4dedb;
-		border: none;
-		padding: 10px 15px;
-		border-radius: 7px;
-		cursor: pointer;
-
-		display: flex;
-		flex-direction: row;
-		gap: 5px;
-		align-items: center;
-
-		transition: all 0.15s linear;
-
-		&:hover {
-			background-color: #c4caca;
-			transform: scale(1.015);
 		}
 	}
 	.menu-bar {
@@ -183,7 +165,7 @@
 		.search-bar {
 			flex-grow: 1;
 			@include sm-max {
-				flex-grow: 1;
+				width: 100%;
 			}
 		}
 
@@ -201,7 +183,6 @@
 		}
 
 		.loading-item {
-			background: #e7ebea;
 			padding: 0 30px;
 		}
 		.skeleton {

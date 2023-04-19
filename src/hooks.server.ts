@@ -13,6 +13,7 @@ const googleProvider = GoogleProvider({
 export const handle = SvelteKitAuth({
 	providers: [googleProvider],
 	secret: SECRET,
+	trustHost: true,
 	callbacks: {
 		signIn: async (params) => {
 			if (!params.user) return false;

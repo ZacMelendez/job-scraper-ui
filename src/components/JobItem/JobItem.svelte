@@ -5,6 +5,7 @@
 	import { Star, MapPin } from 'lucide-svelte';
 	import { userStore } from '../../routes/store';
 	import { page } from '$app/stores';
+	import { Card } from 'flowbite-svelte';
 
 	export let job: JobItemProps;
 	export let favorite = false;
@@ -40,19 +41,30 @@
 	};
 </script>
 
-<div transition:fade={{ duration: 150, easing: linear }}>
+<div class="card">
 	{#if Object.keys($page.data.session || {}).length}
 		<button style="border: none; cursor: pointer" on:click={handleFavorite}>
-			<Star class="star" color="black" fill={favorite ? 'gold' : '#00000000'} />
+			<Star
+				class="star"
+				color={favorite ? '#00000000' : 'rgb(75, 85, 99)'}
+				fill={favorite ? 'gold' : '#00000000'}
+			/>
 		</button>
 	{/if}
 
 	<a target="_blank" href={job.url} rel="noreferrer" class="job-text">
-		<h3>{job.title}</h3>
-		<p class="company">{job.company}</p>
+		<h3 class="mb-2 text-base md:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+			{job.title}
+		</h3>
+		<p class="text-sm md:font-normal text-gray-700 dark:text-gray-400 leading-tight">
+			{job.company}
+		</p>
 
 		{#if job.location.trim() != ''}
-			<p style="display: flex; flex-direction: row; align-items: center; gap: 2px" class="location">
+			<p
+				style="display: flex; flex-direction: row; align-items: center; gap: 2px"
+				class="text-sm md:font-normal text-gray-700 dark:text-gray-400 leading-tight"
+			>
 				<MapPin size={16} />{job.location}
 			</p>
 		{/if}
@@ -60,10 +72,9 @@
 </div>
 
 <style lang="scss">
-	div {
+	.card {
 		box-sizing: border-box;
 		padding: 12px 15px;
-		background: #e7ebea;
 
 		transition: all linear 0.13s;
 		display: flex;
@@ -85,7 +96,6 @@
 				}
 			}
 			* {
-				color: #2e2c3d;
 				padding: 0;
 				margin: 0;
 			}

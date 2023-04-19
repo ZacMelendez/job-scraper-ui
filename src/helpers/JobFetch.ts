@@ -1,4 +1,4 @@
-import type { JobItemProps } from '../../types';
+import type { JobItemProps } from '../types';
 
 interface FetchResponse {
 	info: JobItemProps[];
