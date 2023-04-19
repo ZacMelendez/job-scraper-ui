@@ -1,13 +1,20 @@
 import asyncio
 import json
 import time
-from typing import Callable, List, Optional, TypeVar
+from typing import Callable, List, TypeVar
 import logging
 import sys
 
 import aiohttp
 
-from helpers import JobItem, capOneJobs, paramountJobs, ApiGatewayEvent, put_items
+from .helpers import (
+    amExJobs,
+    JobItem,
+    ApiGatewayEvent,
+    capOneJobs,
+    paramountJobs,
+    put_items,
+)
 
 
 def setup_logging() -> logging.Logger:
@@ -135,10 +142,15 @@ async def main(logger: logging.Logger) -> List[List[JobItem]]:
     try:
         coJobs: List[List[JobItem]]
         parJobs: List[List[JobItem]]
-        [coJobs, parJobs] = await asyncio.gather(
-            *[run_scrape(logger, capOneJobs), run_scrape(logger, paramountJobs)]
+        amexJobs: List[List[JobItem]]
+        [coJobs, parJobs, amexJobs] = await asyncio.gather(
+            *[
+                run_scrape(logger, capOneJobs),
+                run_scrape(logger, paramountJobs),
+                run_scrape(logger, amExJobs),
+            ]
         )
-        return [*coJobs, *parJobs]
+        return [*coJobs, *parJobs, *amexJobs]
     except Exception as e:
         logger.error(e)
         return []
