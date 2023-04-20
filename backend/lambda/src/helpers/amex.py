@@ -60,7 +60,7 @@ async def getJobsOnPage(client: aiohttp.ClientSession, start: int) -> List[JobIt
                     "company": "American Express",
                     "job_id": str(job["id"]),
                     "title": job["name"],
-                    "url": f"https://aexp.eightfold.ai/careers/job?domain=aexp.com&pid={job['id']}&domain=aexp.com&sort_by=relevance&job_index=0",
+                    "jobUrl": f"https://aexp.eightfold.ai/careers/job?domain=aexp.com&pid={job['id']}&domain=aexp.com&sort_by=relevance&job_index=0",
                     "location": job["location"],
                 }
             )

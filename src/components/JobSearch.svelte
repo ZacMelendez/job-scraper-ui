@@ -1,23 +1,16 @@
 <script lang="ts">
-	import { TextInput } from '@svelteuidev/core';
-	import { JobFetch } from '../../helpers';
+	import { JobFetch } from '../helpers';
 	import { formProps } from './store';
-	import { modalState } from '../../routes/store';
+	import { modalState } from '../routes/store';
 	import { Button, Input, Label, Modal } from 'flowbite-svelte';
 
-	import { jobList } from '../../routes/store';
+	import { jobList } from '../routes/store';
 
 	const onSubmit = async () => {
-		const results = await JobFetch({
-			must: $formProps.must == '' ? null : $formProps.must.split(','),
-			include: $formProps.include == '' ? null : $formProps.include.split(','),
-			exclude: $formProps.exclude == '' ? null : $formProps.exclude.split(','),
-			locations: $formProps.locations == '' ? null : $formProps.locations.split(',')
-		});
+		const results = await JobFetch({});
 
-		const uniqueVals = [...new Map(results?.info.map((item) => [item['url'], item])).values()];
-		$jobList.jobs = uniqueVals;
-		$jobList.filteredJobs = uniqueVals;
+		$jobList.jobs = results?.data;
+		$jobList.filteredJobs = results?.data;
 
 		$modalState.opened = false;
 	};

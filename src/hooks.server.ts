@@ -32,8 +32,6 @@ export const handle = SvelteKitAuth({
 				await newUser(newUserItem);
 			}
 
-			// userStore.set({ userId: params.user.id, favorites: user?.favorites?.split(',') || [] });
-
 			return true;
 		},
 		session: async ({ session, token }) => {

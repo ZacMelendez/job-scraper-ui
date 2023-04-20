@@ -2,7 +2,7 @@ export interface JobItemProps {
 	company: string;
 	job_id: string;
 	title: string;
-	url: string;
+	jobUrl: string;
 	location: string;
 }
 

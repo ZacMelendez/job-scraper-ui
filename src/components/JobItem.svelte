@@ -1,15 +1,30 @@
 <script lang="ts">
-	import type { JobItemProps } from '../../types';
-	import { fade } from 'svelte/transition';
-	import { linear } from 'svelte/easing';
+	import type { JobItemProps } from '../types';
 	import { Star, MapPin } from 'lucide-svelte';
-	import { userStore } from '../../routes/store';
+	import { jobList, userStore } from '../routes/store';
 	import { page } from '$app/stores';
-	import { Card } from 'flowbite-svelte';
+	import IntersectionObserver from 'svelte-intersection-observer';
+	import { JobFetch } from '../helpers';
+
+	let element: HTMLElement;
+	let intersecting: boolean;
+	export let lastFetched: boolean;
 
 	export let job: JobItemProps;
 	export let favorite = false;
 	export const job_id = `${job.company.toLowerCase().split(' ').join('-')}-${job.job_id}`;
+
+	const fetchMoreJobs = async () => {
+		const response = await JobFetch({
+			lastEvalKey: job.jobUrl
+		});
+
+		$jobList.jobs = [...$jobList.jobs, ...(response?.data ? response.data : [])];
+		$jobList.filteredJobs = [...$jobList.filteredJobs, ...(response?.data ? response.data : [])];
+
+		$userStore.favorites = $page.data.session?.user?.favorites || [];
+		$userStore.userId = $page.data.session?.user?.id || '';
+	};
 
 	const handleFavorite = async () => {
 		favorite = !favorite;
@@ -31,7 +46,7 @@
 			});
 		}
 
-		await fetch('/', {
+		await fetch('/api', {
 			method: 'POST',
 			body: JSON.stringify({ user_id: $userStore.userId, favorites: newFavorites.join(',') }),
 			headers: {
@@ -41,7 +56,7 @@
 	};
 </script>
 
-<div class="card">
+<div class="card" bind:this={element}>
 	{#if Object.keys($page.data.session || {}).length}
 		<button style="border: none; cursor: pointer" on:click={handleFavorite}>
 			<Star
@@ -52,7 +67,7 @@
 		</button>
 	{/if}
 
-	<a target="_blank" href={job.url} rel="noreferrer" class="job-text">
+	<a target="_blank" href={job.jobUrl} rel="noreferrer" class="job-text">
 		<h3 class="mb-2 text-base md:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
 			{job.title}
 		</h3>
@@ -69,6 +84,16 @@
 			</p>
 		{/if}
 	</a>
+	{#if lastFetched}
+		<IntersectionObserver
+			on:intersect={() => {
+				fetchMoreJobs();
+			}}
+			once
+			{element}
+			bind:intersecting
+		/>
+	{/if}
 </div>
 
 <style lang="scss">

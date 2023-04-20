@@ -1,35 +1,33 @@
 <script lang="ts">
 	import { JobFetch } from '../helpers/';
 	import { JobItem, JobSearch } from '../components';
-	import { jobList, modalState, userStore } from './store';
-	import { Modal, Input, Button } from 'flowbite-svelte';
-	import { formProps } from '../components/JobSearch/store';
+	import { jobList, userStore } from './store';
+	import { Input, Button, ButtonGroup } from 'flowbite-svelte';
 	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
-	import { User, Filter } from 'lucide-svelte';
-	import { Suspense } from '@svelte-drama/suspense';
 
-	// const suspend = createSuspense();
+	import { User, Search } from 'lucide-svelte';
+	import { onMount } from 'svelte';
+
+	const handleSearch = async () => {
+		const response = await JobFetch({ search: $jobList.jobSearch });
+		$jobList.jobs = response?.data;
+		$jobList.filteredJobs = response?.data;
+	};
 
 	const fetchJobs = async () => {
-		const response = await JobFetch({
-			must: [],
-			include: ['software', 'developer'],
-			exclude: ['manager', 'lead', 'principal'],
-			locations: []
-		});
+		const response = await JobFetch({});
 
-		$formProps.include = 'software, developer';
-		$formProps.exclude = 'manager, lead, principal';
-
-		$jobList.jobs = response?.info;
-		$jobList.filteredJobs = response?.info;
+		$jobList.jobs = response?.data;
+		$jobList.filteredJobs = response?.data;
 
 		$userStore.favorites = $page.data.session?.user?.favorites || [];
 		$userStore.userId = $page.data.session?.user?.id || '';
 	};
 
-	// onMount(async () => {});
+	onMount(() => {
+		fetchJobs();
+	});
 
 	const searchJobs = (props: any) => {
 		const { target } = props;
@@ -60,66 +58,51 @@
 <div class="job-items">
 	<div class="menu-bar">
 		<div class="search-bar">
-			<!-- <Input id="search" placeholder="Search"  /> -->
-			<Input
-				class="search-bar"
-				placeholder="Search..."
-				bind:value={$jobList.jobSearch}
-				on:input={searchJobs}
-			/>
+			<ButtonGroup class="w-full">
+				<Input
+					class="search-bar"
+					placeholder="Search..."
+					bind:value={$jobList.jobSearch}
+					on:input={searchJobs}
+				/>
+				<!-- <Button color="blue" on:click={handleSearch}><Search size={16} /></Button> -->
+			</ButtonGroup>
 		</div>
 		<div class="actions">
-			<Button
+			<!-- <Button
 				on:click={() => {
 					$modalState.opened = true;
 				}}
 				color="light"
 			>
-				<Filter size={16} />Filters
-			</Button>
+				<Filter size={16} /> Filters
+			</Button> -->
 			{#if Object.keys($page.data.session || {}).length}
-				<Button color="light" on:click={() => signOut()}><User size={16} />Sign out</Button>
+				<Button color="light" on:click={() => signOut()}
+					><User style="padding-right: 3px;" size={16} />Sign out</Button
+				>
 			{:else}
-				<Button color="light" on:click={() => signIn('google')}><User size={16} />Sign In</Button>
+				<Button color="light" on:click={() => signIn('google')}><User size={16} /> Sign In</Button>
 			{/if}
 		</div>
 	</div>
-	{#if $jobList.filteredJobs.length}
+	<!-- {#if $jobList.filteredJobs.length}
 		<p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">
 			Found {$jobList.filteredJobs.length} items
 		</p>
-	{/if}
+	{/if} -->
 	<ul class="job-list">
-		<Suspense let:suspend on:error={(e) => console.error(e.detail)} on:load={() => {}}>
-			<div class="loading" slot="loading">
-				{#each [...new Array(10)] as item}
-					<li class="loading-item">
-						<div class="skeleton-card-text" style="display: flex;flex-direction: row">
-							<div class="skeleton-item">
-								<div class="skeleton skeleton-card-title" />
-								<div class="skeleton skeleton-card-brand" />
-								<div class="skeleton skeleton-card-brand" />
-							</div>
-						</div>
-					</li>
-				{/each}
-			</div>
-			<p slot="error" let:error>Error: {error}</p>
-			{#await suspend(fetchJobs()) then Skeleton}
-				{#each $jobList.filteredJobs as item}
-					<!-- <ul class="job-list"> -->
-					<li>
-						<JobItem
-							job={item}
-							favorite={$userStore.favorites.includes(
-								`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
-							)}
-						/>
-					</li>
-					<!-- </ul> -->
-				{/each}
-			{/await}
-		</Suspense>
+		{#each $jobList.filteredJobs as item, i}
+			<li>
+				<JobItem
+					job={item}
+					favorite={$userStore.favorites.includes(
+						`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
+					)}
+					lastFetched={(i + 1) % 20 == 0}
+				/>
+			</li>
+		{/each}
 	</ul>
 </div>
 
@@ -127,8 +110,12 @@
 	@import '../styles/breakpoints.scss';
 	.job-items {
 		padding: 5px 15px;
-		display: relative;
+		position: relative;
 		width: 100%;
+
+		@include sm-max {
+			padding: 0;
+		}
 		ul {
 			margin: 0;
 			padding: 0;

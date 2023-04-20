@@ -10,7 +10,6 @@ import aiohttp
 from .helpers import (
     amExJobs,
     JobItem,
-    ApiGatewayEvent,
     capOneJobs,
     paramountJobs,
     put_items,
@@ -56,10 +55,6 @@ def flatten(list: List[List[T]]) -> List[T]:
 
 def filterJobs(
     jobs: List[List[JobItem]],
-    include: List[str],
-    exclude: List[str],
-    must: List[str],
-    locations: List[str],
 ) -> List[JobItem]:
     """
     Filters the list of job items based on the given criteria.
@@ -74,35 +69,9 @@ def filterJobs(
         List[JobItem]: The list of job items that match the filtering criteria.
     """
     flat = flatten(jobs)
+    unique = list({v["jobUrl"]: v for v in flat}.values())
 
-    return list(
-        filter(
-            lambda job: (
-                True
-                if not len(must)
-                else all(title.lower() in job["title"].lower() for title in must)
-            )
-            and (
-                True
-                if not len(include)
-                else any(title.lower() in job["title"].lower() for title in include)
-            )
-            and not (
-                False
-                if not len(exclude)
-                else any(title.lower() in job["title"].lower() for title in exclude)
-            )
-            and (
-                True
-                if not len(locations)
-                else any(
-                    location.lower() in job["location"].lower()
-                    for location in locations
-                )
-            ),
-            flat,
-        )
-    )
+    return unique
 
 
 async def run_scrape(logger: logging.Logger, scraper: Callable) -> List[List[JobItem]]:
@@ -156,7 +125,7 @@ async def main(logger: logging.Logger) -> List[List[JobItem]]:
         return []
 
 
-def lambda_handler(event: ApiGatewayEvent, context):
+def lambda_handler(event, context):
     """
         The AWS Lambda function handler for the application.
 
@@ -169,28 +138,12 @@ def lambda_handler(event: ApiGatewayEvent, context):
     """
     logger = setup_logging()
     try:
-        include: List[str] = []
-        exclude: List[str] = []
-        must: List[str] = []
-        locations: List[str] = []
-        store: bool = False
-        if event["queryStringParameters"]:
-            queries = event["queryStringParameters"]
-            if "include" in queries:
-                include = [item.strip() for item in queries["include"].split(",")]
-            if "exclude" in queries:
-                exclude = [item.strip() for item in queries["exclude"].split(",")]
-            if "must" in queries:
-                must = [item.strip() for item in queries["must"].split(",")]
-            if "locations" in queries:
-                locations = [item.strip() for item in queries["locations"].split(",")]
-            if "store" in queries:
-                store = queries["store"].lower() == "true"
+        store: bool = True
 
         start = time.perf_counter()
         jobs = asyncio.run(main(logger))
         end = time.perf_counter()
-        filtered_jobs = filterJobs(jobs, include, exclude, must, locations)
+        filtered_jobs = filterJobs(jobs)
 
         logger.info(f"found {len(filtered_jobs)} jobs in {end - start:0.4f} seconds")
 
@@ -206,27 +159,7 @@ def lambda_handler(event: ApiGatewayEvent, context):
             )
             logger.info(f"successfully put {len(successful)} items in DynamoDB")
 
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "*",
-                "Access-Control-Allow-Methods": "GET, OPTIONS",
-            },
-            "body": json.dumps(
-                {"info": list({v["url"]: v for v in filtered_jobs}.values())}
-            ),
-        }
+        return
     except Exception as e:
         logger.error(e)
-        return {
-            "statusCode": 500,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "*",
-                "Access-Control-Allow-Methods": "GET, OPTIONS",
-            },
-            "body": json.dumps({"info": "internal server error, please check logs"}),
-        }
+        return

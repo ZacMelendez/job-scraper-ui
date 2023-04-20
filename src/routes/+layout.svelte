@@ -1,14 +1,14 @@
 <script>
-	import '../app.postcss';
+	// import '../app.postcss';
 	import { SvelteUIProvider } from '@svelteuidev/core';
 	import '../styles/globals.scss';
 </script>
 
 <div class="app">
 	<main>
-		<svelteuiprovider>
+		<SvelteUIProvider>
 			<slot />
-		</svelteuiprovider>
+		</SvelteUIProvider>
 	</main>
 
 	<footer />

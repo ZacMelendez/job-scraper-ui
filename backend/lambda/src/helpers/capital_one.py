@@ -76,7 +76,7 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                                 "company": "Capital One",
                                 "job_id": job_id,
                                 "title": title,
-                                "url": f"https://www.capitalonecareers.com{href}",
+                                "jobUrl": f"https://www.capitalonecareers.com{href}",
                                 "location": location,
                             }
                         )

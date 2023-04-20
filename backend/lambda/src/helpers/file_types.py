@@ -7,7 +7,7 @@ class JobItem(TypedDict):
     company: str
     job_id: str
     title: str
-    url: str
+    jobUrl: str
     location: str
 
 

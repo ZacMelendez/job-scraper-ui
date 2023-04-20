@@ -10,6 +10,9 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 1024
+    Environment:
+      Variables:
+        JOBS_TABLE: job-scraper-Jobs-1GEMB2MJEJKAI
 
 Resources:
   JobScraperFunction:
@@ -21,21 +24,21 @@ Resources:
       Architectures:
         - arm64
       Events:
-        Api:
-          Type: Api
+        CloudWatchSchedule:
+          Type: Schedule
           Properties:
-            Path: /jobs
-            Method: GET
-            Auth:
-              ApiKeyRequired: true
-  UserFavorites:
+            Schedule: 'rate(1 day)'
+            Name: job_scraper
+            Description: Cloud Watch Trigger used to run this function once a day
+            Enabled: true
+  Jobs:
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
-        - AttributeName: user_id
+        - AttributeName: jobUrl
           AttributeType: S
       KeySchema: 
-        - AttributeName: user_id
+        - AttributeName: jobUrl
           KeyType: HASH
       ProvisionedThroughput: 
         ReadCapacityUnits: 1
@@ -52,8 +55,3 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-
-Outputs: 
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Job Scraper function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/jobs/"
