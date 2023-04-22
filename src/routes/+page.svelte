@@ -9,10 +9,16 @@
 	import { User, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
+	let returnedCount: number;
+	let searched = false;
+
 	const handleSearch = async () => {
 		const response = await JobFetch({ search: $jobList.jobSearch });
 		$jobList.jobs = response?.data;
 		$jobList.filteredJobs = response?.data;
+
+		returnedCount = response?.data.length;
+		searched = true;
 	};
 
 	const fetchJobs = async () => {
@@ -23,6 +29,9 @@
 
 		$userStore.favorites = $page.data.session?.user?.favorites || [];
 		$userStore.userId = $page.data.session?.user?.id || '';
+
+		returnedCount = response?.data.length;
+		searched = false;
 	};
 
 	onMount(() => {
@@ -65,7 +74,7 @@
 					bind:value={$jobList.jobSearch}
 					on:input={searchJobs}
 				/>
-				<!-- <Button color="blue" on:click={handleSearch}><Search size={16} /></Button> -->
+				<Button color="blue" on:click={handleSearch}><Search size={16} /></Button>
 			</ButtonGroup>
 		</div>
 		<div class="actions">
@@ -99,7 +108,8 @@
 					favorite={$userStore.favorites.includes(
 						`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
 					)}
-					lastFetched={(i + 1) % 20 == 0}
+					lastFetched={(i + 1) % returnedCount == 0}
+					search={searched ? $jobList.jobSearch : null}
 				/>
 			</li>
 		{/each}
@@ -164,53 +174,53 @@
 		}
 	}
 
-	.loading {
-		ul {
-			list-style-type: none;
-		}
+	// .loading {
+	// 	ul {
+	// 		list-style-type: none;
+	// 	}
 
-		.loading-item {
-			padding: 0 30px;
-		}
-		.skeleton {
-			border-radius: 0.25rem;
-			animation: skeleton-loading 1s linear infinite alternate;
-		}
+	// 	.loading-item {
+	// 		padding: 0 30px;
+	// 	}
+	// 	.skeleton {
+	// 		border-radius: 0.25rem;
+	// 		animation: skeleton-loading 1s linear infinite alternate;
+	// 	}
 
-		.skeleton-card-brand {
-			width: 70%;
-			height: 0.7rem;
-			margin: 0.5rem;
-			border-radius: 0.25rem;
-			@include sm-max {
-				width: 40%;
-			}
-		}
+	// 	.skeleton-card-brand {
+	// 		width: 70%;
+	// 		height: 0.7rem;
+	// 		margin: 0.5rem;
+	// 		border-radius: 0.25rem;
+	// 		@include sm-max {
+	// 			width: 40%;
+	// 		}
+	// 	}
 
-		.skeleton-card-text {
-			padding: 10px;
-		}
+	// 	.skeleton-card-text {
+	// 		padding: 10px;
+	// 	}
 
-		.skeleton-card-title {
-			width: 100%;
-			height: 0.9rem;
-			margin: 0.5rem;
-		}
+	// 	.skeleton-card-title {
+	// 		width: 100%;
+	// 		height: 0.9rem;
+	// 		margin: 0.5rem;
+	// 	}
 
-		.skeleton-item {
-			width: 40%;
-			@include sm-max {
-				width: 90%;
-			}
-		}
+	// 	.skeleton-item {
+	// 		width: 40%;
+	// 		@include sm-max {
+	// 			width: 90%;
+	// 		}
+	// 	}
 
-		@keyframes skeleton-loading {
-			0% {
-				background-color: var(--skeleton-loader-dark);
-			}
-			100% {
-				background-color: var(--skeleton-loader-light);
-			}
-		}
-	}
+	// 	@keyframes skeleton-loading {
+	// 		0% {
+	// 			background-color: var(--skeleton-loader-dark);
+	// 		}
+	// 		100% {
+	// 			background-color: var(--skeleton-loader-light);
+	// 		}
+	// 	}
+	// }
 </style>

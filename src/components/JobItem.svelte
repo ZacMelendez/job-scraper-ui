@@ -9,6 +9,7 @@
 	let element: HTMLElement;
 	let intersecting: boolean;
 	export let lastFetched: boolean;
+	export let search: string | null;
 
 	export let job: JobItemProps;
 	export let favorite = false;
@@ -16,7 +17,8 @@
 
 	const fetchMoreJobs = async () => {
 		const response = await JobFetch({
-			lastEvalKey: job.jobUrl
+			lastEvalKey: job.jobUrl,
+			...(search && { search })
 		});
 
 		$jobList.jobs = [...$jobList.jobs, ...(response?.data ? response.data : [])];
@@ -54,6 +56,12 @@
 			}
 		});
 	};
+
+	const toTitleCase = (str: string) => {
+		return str.replace(/\w\S*/g, (txt: string) => {
+			return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
+		});
+	};
 </script>
 
 <div class="card" bind:this={element}>
@@ -69,10 +77,10 @@
 
 	<a target="_blank" href={job.jobUrl} rel="noreferrer" class="job-text">
 		<h3 class="mb-2 text-base md:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-			{job.title}
+			{toTitleCase(job.title)}
 		</h3>
 		<p class="text-sm md:font-normal text-gray-700 dark:text-gray-400 leading-tight">
-			{job.company}
+			{toTitleCase(job.company)}
 		</p>
 
 		{#if job.location.trim() != ''}
@@ -80,7 +88,7 @@
 				style="display: flex; flex-direction: row; align-items: center; gap: 2px"
 				class="text-sm md:font-normal text-gray-700 dark:text-gray-400 leading-tight"
 			>
-				<MapPin size={16} />{job.location}
+				<MapPin size={16} />{toTitleCase(job.location)}
 			</p>
 		{/if}
 	</a>

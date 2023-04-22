@@ -4,6 +4,7 @@ export interface JobItemProps {
 	title: string;
 	jobUrl: string;
 	location: string;
+	type: 'job';
 }
 
 export interface JobSearchProps {

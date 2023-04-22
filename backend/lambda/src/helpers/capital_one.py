@@ -1,18 +1,157 @@
 import asyncio
 import json
 import ssl
+import sys
 import time
-from typing import List
+from typing import List, TypeVar, TypedDict
 from bs4 import BeautifulSoup
 import aiohttp
 import logging
 
+from async_googlemaps import AsyncClient
+
 logger = logging.getLogger(__name__)
+
 
 from .file_types import JobItem
 
+
+class States:
+    def __init__(self):
+        self.abbreviations = [
+            "AL",
+            "AK",
+            "AS",
+            "AZ",
+            "AR",
+            "CA",
+            "CO",
+            "CT",
+            "DE",
+            "DC",
+            "FM",
+            "FL",
+            "GA",
+            "GU",
+            "HI",
+            "ID",
+            "IL",
+            "IN",
+            "IA",
+            "KS",
+            "KY",
+            "LA",
+            "ME",
+            "MH",
+            "MD",
+            "MA",
+            "MI",
+            "MN",
+            "MS",
+            "MO",
+            "MT",
+            "NE",
+            "NV",
+            "NH",
+            "NJ",
+            "NM",
+            "NY",
+            "NC",
+            "ND",
+            "MP",
+            "OH",
+            "OK",
+            "OR",
+            "PW",
+            "PA",
+            "PR",
+            "RI",
+            "SC",
+            "SD",
+            "TN",
+            "TX",
+            "US",
+            "UT",
+            "VT",
+            "VI",
+            "VA",
+            "WA",
+            "WV",
+            "WI",
+            "WY",
+        ]
+        self.states = [
+            "Alabama",
+            "Alaska",
+            "Arizona",
+            "Arkansas",
+            "California",
+            "Colorado",
+            "Connecticut",
+            "Delaware",
+            "Florida",
+            "Georgia",
+            "Hawaii",
+            "Idaho",
+            "Illinois",
+            "Indiana",
+            "Iowa",
+            "Kansas",
+            "Kentucky",
+            "Louisiana",
+            "Maine",
+            "Maryland",
+            "Massachusetts",
+            "Michigan",
+            "Minnesota",
+            "Mississippi",
+            "Missouri",
+            "Montana",
+            "Nebraska",
+            "Nevada",
+            "New Hampshire",
+            "New Jersey",
+            "New Mexico",
+            "New York",
+            "North Carolina",
+            "North Dakota",
+            "Ohio",
+            "Oklahoma",
+            "Oregon",
+            "Pennsylvania",
+            "Rhode Island",
+            "South Carolina",
+            "South Dakota",
+            "Tennessee",
+            "Texas",
+            "United States" "Utah",
+            "Vermont",
+            "Virginia",
+            "Washington",
+            "West Virginia",
+            "Wisconsin",
+            "Wyoming",
+        ]
+
+
+states = States()
+
 URL: str = "https://www.capitalonecareers.com/search-jobs/results?ActiveFacetID=0&CurrentPage={page}&RecordsPerPage=15&Distance=50&RadiusUnitType=0&Keywords=&Location=&ShowRadius=False&IsPagination=True&CustomFacetName=&FacetTerm=&FacetType=0&SearchResultsModuleName=Search+Results&SearchFiltersModuleName=Search+Filters&SortCriteria=0&SortDirection=0&SearchType=5&Postal"
 page_count: int = 15
+
+
+class LocationsMap:
+    def __init__(self):
+        self.locations = {}
+
+    def get_location(self, location):
+        return location in self.locations
+
+    def location_in_US(self, location):
+        return self.locations[location]
+
+    def add_location(self, location, in_US):
+        self.locations[location] = in_US
 
 
 async def getJobCount(client: aiohttp.ClientSession) -> int:
@@ -31,6 +170,8 @@ async def getJobCount(client: aiohttp.ClientSession) -> int:
 
 
 async def getCapitalOneJobs(client: aiohttp.ClientSession) -> List[List[JobItem]]:
+    locations = LocationsMap()
+
     jobs_count = await getJobCount(client)
     jobs: List[List[JobItem]] = []
     logger.info(
@@ -40,7 +181,7 @@ async def getCapitalOneJobs(client: aiohttp.ClientSession) -> List[List[JobItem]
     )
     jobs = await asyncio.gather(
         *[
-            getJobsOnPage(client=client, page=i)
+            getJobsOnPage(client=client, page=i, locations=locations)
             for i in range(round(jobs_count / page_count))
         ]
     )
@@ -48,7 +189,9 @@ async def getCapitalOneJobs(client: aiohttp.ClientSession) -> List[List[JobItem]
     return jobs
 
 
-async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobItem]:
+async def getJobsOnPage(
+    client: aiohttp.ClientSession, page: int, locations: LocationsMap
+) -> List[JobItem]:
     jobs: List[JobItem] = []
     logger.debug(f"fetching Capital One jobs on page {page}")
     async with client.get(
@@ -63,6 +206,7 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                     job_id = job.attrs["data-job-id"].replace('\\"', "")
                     href = job.attrs["href"]
                     title = ""
+                    in_US = False
                     title_search = job.find("h2")
                     if title_search:
                         title = title_search.text
@@ -70,16 +214,28 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                     location_search = job.find("span", "job-location")
                     if location_search:
                         location = location_search.text
-                    if title != "":
+                        if location.strip() != "":
+                            if locations.get_location(location):
+                                in_US = locations.location_in_US(location)
+                            else:
+                                major = location.split(",")[1].strip()
+                                in_US = (
+                                    major in states.states
+                                    or major in states.abbreviations
+                                )
+
+                                locations.add_location(location, in_US)
+                    if title != "" and in_US:
                         jobs.append(
                             {
-                                "company": "Capital One",
-                                "job_id": job_id,
-                                "title": title,
-                                "jobUrl": f"https://www.capitalonecareers.com{href}",
-                                "location": location,
+                                "company": "Capital One".lower(),
+                                "job_id": job_id.lower(),
+                                "title": title.lower(),
+                                "jobUrl": f"https://www.capitalonecareers.com{href}".lower(),
+                                "location": location.lower(),
+                                "type": "job",
                             }
                         )
                 except Exception as e:
-                    print(job, e)
+                    logger.error(job, e)
         return jobs

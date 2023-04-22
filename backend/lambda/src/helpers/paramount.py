@@ -2,6 +2,7 @@ import asyncio
 import ssl
 import time
 from typing import List
+from async_googlemaps import AsyncClient
 from bs4 import BeautifulSoup
 import aiohttp
 from typing import List
@@ -65,6 +66,7 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                     job_id = ""
                     href = ""
                     location = ""
+                    in_US = False
 
                     if len(title_search):
                         job_tile = title_search[0]
@@ -79,17 +81,25 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                         if len(location_search):
                             location_item = location_search[0]
                             location = location_item.text.strip()
+                            if location != "":
+                                try:
+                                    country = location.split(",")[2]
+                                    if country.lower() in ["us", "united states"]:
+                                        in_US = True
+                                except Exception as e:
+                                    logger.error(location, e)
 
-                    if title != "":
+                    if title != "" and in_US:
                         jobs.append(
                             {
-                                "company": "Paramount",
-                                "job_id": job_id,
-                                "title": title,
-                                "jobUrl": f"https://careers.paramount.com{href}",
-                                "location": location,
+                                "company": "Paramount".lower(),
+                                "type": "job".lower(),
+                                "job_id": job_id.lower(),
+                                "title": title.lower(),
+                                "jobUrl": f"https://careers.paramount.com{href}".lower(),
+                                "location": location.lower(),
                             }
                         )
                 except Exception as e:
-                    print(job, e)
+                    logger.error(job, e)
         return jobs

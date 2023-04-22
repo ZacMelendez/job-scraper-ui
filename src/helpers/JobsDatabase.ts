@@ -11,20 +11,6 @@ const clientOptions = {
 	}
 };
 
-// import AmazonDaxClient from 'amazon-dax-client';
-// import AWS from 'aws-sdk';
-
-// import { DAXClient, CreateClusterCommand } from "@aws-sdk/client-dax";
-
-// // Replace this ...
-// const ddb = new AWS.DynamoDB(clientOptions);
-// /// with this ...
-// const endpoint = 'daxs://job-scraper-jobs.cbszpm.dax-clusters.us-east-1.amazonaws.com';
-// const dax = new AmazonDaxClient({ endpoints: [endpoint], region: 'us-east-1' });
-
-// // If using AWS.DynamoDB.DocumentClient ...
-// const doc = new AWS.DynamoDB.DocumentClient({ service: dax });
-
 const client = new DynamoDBClient(clientOptions);
 
 export const getJobs = async ({
@@ -35,26 +21,46 @@ export const getJobs = async ({
 	search?: string;
 }): Promise<JobItemProps[]> => {
 	try {
-		const command = new ScanCommand({
-			TableName: SECRET_JOBS_TABLE,
-			Limit: 20,
-			...(lastEvalKey && {
-				ExclusiveStartKey: {
-					jobUrl: {
-						S: lastEvalKey
-					}
-				}
-			}),
-			...(search && {
-				FilterExpression: 'contains(title, :search) or contains(location, :search)',
-				ExpressionAttributeValues: { ':search': { S: search } }
-			}),
-			ReturnConsumedCapacity: 'TOTAL'
-		});
+		const command = search
+			? new QueryCommand({
+					TableName: SECRET_JOBS_TABLE,
+					...(lastEvalKey && {
+						ExclusiveStartKey: {
+							jobUrl: {
+								S: lastEvalKey
+							}
+						}
+					}),
+					Limit: 20,
+					...(search && {
+						KeyConditionExpression: '#jobType = :type',
+						FilterExpression: 'contains(#jobTitle, :search) OR contains(#jobLocation, :search)',
+						ExpressionAttributeValues: { ':search': { S: search }, ':type': { S: 'job' } },
+						ExpressionAttributeNames: {
+							'#jobType': 'type',
+							'#jobLocation': 'location',
+							'#jobTitle': 'title'
+						}
+					}),
+					ReturnConsumedCapacity: 'TOTAL'
+			  })
+			: new ScanCommand({
+					TableName: SECRET_JOBS_TABLE,
+					...(lastEvalKey && {
+						ExclusiveStartKey: {
+							jobUrl: {
+								S: lastEvalKey
+							},
+							type: {
+								S: 'job'
+							}
+						}
+					}),
+					ReturnConsumedCapacity: 'TOTAL',
+					Limit: 20
+			  });
 
 		const Items = await client.send(command);
-
-		search && console.log(Items?.Items);
 
 		const posts = Items?.Items?.map((item) => unmarshall(item));
 		return posts as JobItemProps[];

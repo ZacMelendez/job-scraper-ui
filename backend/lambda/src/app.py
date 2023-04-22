@@ -138,8 +138,6 @@ def lambda_handler(event, context):
     """
     logger = setup_logging()
     try:
-        store: bool = True
-
         start = time.perf_counter()
         jobs = asyncio.run(main(logger))
         end = time.perf_counter()
@@ -147,17 +145,9 @@ def lambda_handler(event, context):
 
         logger.info(f"found {len(filtered_jobs)} jobs in {end - start:0.4f} seconds")
 
-        if store:
-            logger.info(f"putting jobs in dynamodb")
-            result = asyncio.run(put_items(filtered_jobs))
-            successful = list(
-                filter(
-                    lambda response: response["ResponseMetadata"]["HTTPStatusCode"]
-                    < 400,
-                    result,
-                )
-            )
-            logger.info(f"successfully put {len(successful)} items in DynamoDB")
+        logger.info(f"putting jobs in dynamodb")
+        asyncio.run(put_items(filtered_jobs))
+        logger.info(f"successfully put {len(filtered_jobs)} items in DynamoDB")
 
         return
     except Exception as e:

@@ -1,13 +1,17 @@
 import asyncio
 import ssl
-from typing import List
+import sys
+from typing import List, TypeVar, TypedDict
 import aiohttp
 import logging
+
+from async_googlemaps import AsyncClient
 
 logger = logging.getLogger(__name__)
 
 from .file_types import JobItem
 
+logger = logging.getLogger(__name__)
 page_count: int = 15
 
 
@@ -55,14 +59,24 @@ async def getJobsOnPage(client: aiohttp.ClientSession, start: int) -> List[JobIt
         amex_jobs = data["positions"]
 
         for job in amex_jobs:
-            jobs.append(
-                {
-                    "company": "American Express",
-                    "job_id": str(job["id"]),
-                    "title": job["name"],
-                    "jobUrl": f"https://aexp.eightfold.ai/careers/job?domain=aexp.com&pid={job['id']}&domain=aexp.com&sort_by=relevance&job_index=0",
-                    "location": job["location"],
-                }
-            )
+            in_US = False
+            location = (job["location"]).lower()
+            if location != "":
+                try:
+                    if "united states" in location.lower():
+                        in_US = True
+                except Exception as e:
+                    logger.error(job, e)
+            if in_US:
+                jobs.append(
+                    {
+                        "company": "American Express".lower(),
+                        "job_id": str(job["id"]).lower(),
+                        "type": "job",
+                        "title": (job["name"]).lower(),
+                        "jobUrl": f"https://aexp.eightfold.ai/careers/job?domain=aexp.com&pid={job['id']}&domain=aexp.com&sort_by=relevance&job_index=0".lower(),
+                        "location": (job["location"]).lower(),
+                    }
+                )
 
         return jobs

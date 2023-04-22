@@ -12,7 +12,7 @@ Globals:
     MemorySize: 1024
     Environment:
       Variables:
-        JOBS_TABLE: job-scraper-Jobs-1GEMB2MJEJKAI
+        JOBS_TABLE: !Select [1, !Split ['/', !GetAtt Jobs.Arn]]
 
 Resources:
   JobScraperFunction:
@@ -31,18 +31,24 @@ Resources:
             Name: job_scraper
             Description: Cloud Watch Trigger used to run this function once a day
             Enabled: true
+      Policies:
+      - DynamoDBCrudPolicy: 
+          TableName: !Select [1, !Split ['/', !GetAtt Jobs.Arn]]
   Jobs:
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
+        - AttributeName: type
+          AttributeType: S
         - AttributeName: jobUrl
           AttributeType: S
       KeySchema: 
-        - AttributeName: jobUrl
+        - AttributeName: type
           KeyType: HASH
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        - AttributeName: jobUrl
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+
   Users:
     Type: AWS::DynamoDB::Table
     Properties: 
@@ -52,6 +58,4 @@ Resources:
       KeySchema: 
         - AttributeName: user_id
           KeyType: HASH
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+      BillingMode: PAY_PER_REQUEST

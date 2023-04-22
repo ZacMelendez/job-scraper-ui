@@ -2,7 +2,6 @@ import os
 from typing import List, TypedDict
 import aioboto3
 from .file_types import JobItem
-import asyncio
 
 
 class HTTPHeaders(TypedDict):
@@ -26,11 +25,10 @@ class Response(TypedDict):
     ResponseMetadata: ResponseMetadata
 
 
-async def put_items(jobs: List[JobItem]) -> List[Response]:
+async def put_items(jobs: List[JobItem]):
     session = aioboto3.Session(region_name="us-east-1")
     async with session.resource("dynamodb") as dynamodb:
-        table = await dynamodb.Table(os.environ.get("JOBS_TABLE"))
-        result: List[Response]
-        result = await asyncio.gather(*[table.put_item(Item=job) for job in jobs])
-
-        return result
+        table = await dynamodb.Table(os.environ.get("JOBS_TABLE") or "")
+        async with table.batch_writer() as batch_writer:
+            for job in jobs:
+                await batch_writer.put_item(Item=job)

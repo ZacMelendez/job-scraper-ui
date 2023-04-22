@@ -12,8 +12,8 @@ export async function POST({ request }) {
 }
 
 export async function GET({ url }) {
-	const lastEvalKey = url.searchParams.get('lastEvalKey') ?? undefined;
-	const search = url.searchParams.get('search') ?? undefined;
+	const lastEvalKey = url.searchParams.get('lastEvalKey')?.toLowerCase() ?? undefined;
+	const search = url.searchParams.get('search')?.toLowerCase() ?? undefined;
 
 	const data = await getJobs({ lastEvalKey, search });
 

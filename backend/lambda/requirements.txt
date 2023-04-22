@@ -1,3 +1,5 @@
 aiohttp
 beautifulsoup4
-aioboto3
+aioboto3~=11.1.0
+async-googlemaps
+googlemaps
