@@ -15,8 +15,8 @@ export default async function JobFetch({
 
 	if (lastEvalKey || search) {
 		url = url.concat('?');
-		url = lastEvalKey ? url.concat(`lastEvalKey=${lastEvalKey}`) : url;
-		url = search ? url.concat(`search=${search}`) : url;
+		url = lastEvalKey ? url.concat(`lastEvalKey=${encodeURIComponent(lastEvalKey)}`) : url;
+		url = search ? url.concat(`search=${encodeURIComponent(search)}`) : url;
 	}
 	try {
 		const response = await fetch(url, {

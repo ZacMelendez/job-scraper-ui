@@ -5,10 +5,14 @@ export const jobList = writable<{
 	jobs: JobItemProps[];
 	filteredJobs: JobItemProps[];
 	jobSearch: string;
+	returnedJobCount: number;
+	searched: boolean;
 }>({
 	jobs: [],
 	filteredJobs: [],
-	jobSearch: ''
+	jobSearch: '',
+	returnedJobCount: 20,
+	searched: false
 });
 
 export const userStore = writable<{ userId: string; favorites: string[] }>({

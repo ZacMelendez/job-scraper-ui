@@ -1,24 +1,22 @@
 <script lang="ts">
 	import { JobFetch } from '../helpers/';
-	import { JobItem, JobSearch } from '../components';
+	import { Drawer, JobItem } from '../components';
 	import { jobList, userStore } from './store';
 	import { Input, Button, ButtonGroup } from 'flowbite-svelte';
-	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
 
-	import { User, Search } from 'lucide-svelte';
+	import { Search, SlidersHorizontal } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
-	let returnedCount: number;
-	let searched = false;
+	let drawer = true;
 
 	const handleSearch = async () => {
 		const response = await JobFetch({ search: $jobList.jobSearch });
 		$jobList.jobs = response?.data;
 		$jobList.filteredJobs = response?.data;
 
-		returnedCount = response?.data.length;
-		searched = true;
+		$jobList.returnedJobCount = response?.data.length;
+		$jobList.searched = true;
 	};
 
 	const fetchJobs = async () => {
@@ -30,11 +28,13 @@
 		$userStore.favorites = $page.data.session?.user?.favorites || [];
 		$userStore.userId = $page.data.session?.user?.id || '';
 
-		returnedCount = response?.data.length;
-		searched = false;
+		$jobList.returnedJobCount = response?.data.length;
+
+		$jobList.searched = false;
 	};
 
 	onMount(() => {
+		if ($jobList.searched) return;
 		fetchJobs();
 	});
 
@@ -62,44 +62,26 @@
 	<meta name="description" content="SvelteKit Job Scraper" />
 </svelte:head>
 
-<JobSearch />
+<Drawer hidden1={drawer} />
 
 <div class="job-items">
 	<div class="menu-bar">
 		<div class="search-bar">
-			<ButtonGroup class="w-full">
-				<Input
-					class="search-bar"
-					placeholder="Search..."
-					bind:value={$jobList.jobSearch}
-					on:input={searchJobs}
-				/>
+			<ButtonGroup class="w-full h-full">
+				<Input placeholder="Search..." bind:value={$jobList.jobSearch} on:input={searchJobs} />
 				<Button color="blue" on:click={handleSearch}><Search size={16} /></Button>
 			</ButtonGroup>
 		</div>
-		<div class="actions">
-			<!-- <Button
-				on:click={() => {
-					$modalState.opened = true;
-				}}
+		<!-- <div class="actions">
+			<Button
 				color="light"
+				on:click={() => {
+					drawer = false;
+				}}><SlidersHorizontal size={16} /></Button
 			>
-				<Filter size={16} /> Filters
-			</Button> -->
-			{#if Object.keys($page.data.session || {}).length}
-				<Button color="light" on:click={() => signOut()}
-					><User style="padding-right: 3px;" size={16} />Sign out</Button
-				>
-			{:else}
-				<Button color="light" on:click={() => signIn('google')}><User size={16} /> Sign In</Button>
-			{/if}
-		</div>
+		</div> -->
 	</div>
-	<!-- {#if $jobList.filteredJobs.length}
-		<p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">
-			Found {$jobList.filteredJobs.length} items
-		</p>
-	{/if} -->
+
 	<ul class="job-list">
 		{#each $jobList.filteredJobs as item, i}
 			<li>
@@ -108,8 +90,8 @@
 					favorite={$userStore.favorites.includes(
 						`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
 					)}
-					lastFetched={(i + 1) % returnedCount == 0}
-					search={searched ? $jobList.jobSearch : null}
+					lastFetched={(i + 1) % $jobList.returnedJobCount == 0}
+					search={$jobList.searched ? $jobList.jobSearch : null}
 				/>
 			</li>
 		{/each}
@@ -152,15 +134,18 @@
 		width: 100%;
 		align-items: center;
 		gap: 15px;
-		height: 50px;
+		height: 40px;
 
 		.actions {
 			display: flex;
 			flex-direction: row;
 			gap: 15px;
+			height: 100%;
 		}
 		.search-bar {
 			flex-grow: 1;
+			height: 100%;
+
 			@include sm-max {
 				width: 100%;
 			}

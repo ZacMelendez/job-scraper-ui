@@ -27,15 +27,18 @@ export const getJobs = async ({
 					...(lastEvalKey && {
 						ExclusiveStartKey: {
 							jobUrl: {
-								S: lastEvalKey
+								S: decodeURIComponent(lastEvalKey)
 							}
 						}
 					}),
-					Limit: 20,
+					// Limit: 200,
 					...(search && {
 						KeyConditionExpression: '#jobType = :type',
 						FilterExpression: 'contains(#jobTitle, :search) OR contains(#jobLocation, :search)',
-						ExpressionAttributeValues: { ':search': { S: search }, ':type': { S: 'job' } },
+						ExpressionAttributeValues: {
+							':search': { S: decodeURIComponent(search) },
+							':type': { S: 'job' }
+						},
 						ExpressionAttributeNames: {
 							'#jobType': 'type',
 							'#jobLocation': 'location',
@@ -49,7 +52,7 @@ export const getJobs = async ({
 					...(lastEvalKey && {
 						ExclusiveStartKey: {
 							jobUrl: {
-								S: lastEvalKey
+								S: decodeURIComponent(lastEvalKey)
 							},
 							type: {
 								S: 'job'

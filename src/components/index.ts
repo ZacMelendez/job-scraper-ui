@@ -1,3 +1,5 @@
 import JobItem from './JobItem.svelte';
 import JobSearch from './JobSearch.svelte';
-export { JobItem, JobSearch };
+import Icon from './Icon.svelte';
+import Drawer from './FilterDrawer.svelte';
+export { JobItem, JobSearch, Icon, Drawer };

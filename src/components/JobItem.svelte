@@ -26,6 +26,8 @@
 
 		$userStore.favorites = $page.data.session?.user?.favorites || [];
 		$userStore.userId = $page.data.session?.user?.id || '';
+
+		$jobList.returnedJobCount = response?.data.length;
 	};
 
 	const handleFavorite = async () => {
@@ -95,6 +97,7 @@
 	{#if lastFetched}
 		<IntersectionObserver
 			on:intersect={() => {
+				if ($jobList.searched) return;
 				fetchMoreJobs();
 			}}
 			once
