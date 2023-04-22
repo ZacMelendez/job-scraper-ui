@@ -26,7 +26,7 @@ export const handle = SvelteKitAuth({
 					name: params.user.name || '',
 					email: params.user.email || '',
 					image: params.user.image || '',
-					favorites: []
+					favorites: ''
 				};
 
 				await newUser(newUserItem);
