@@ -51,7 +51,6 @@ async def getJobsOnPage(client: aiohttp.ClientSession, start: int) -> List[JobIt
         URL.format(start=start, page_count=start + page_count), ssl=ssl.SSLContext()
     ) as response:
         data = await response.json()
-        logger.info(data)
         bofa_jobs = data["jobsList"]
 
         for job in bofa_jobs:

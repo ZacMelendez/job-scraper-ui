@@ -114,7 +114,7 @@ async def main(logger: logging.Logger) -> List[List[JobItem]]:
         parJobs: List[List[JobItem]]
         amexJobs: List[List[JobItem]]
         bofaJobs: List[List[JobItem]]
-        [coJobs, parJobs, amexJobs] = await asyncio.gather(
+        [coJobs, parJobs, amexJobs, bofaJobs] = await asyncio.gather(
             *[
                 run_scrape(logger, capOneJobs),
                 run_scrape(logger, paramountJobs),
@@ -122,7 +122,7 @@ async def main(logger: logging.Logger) -> List[List[JobItem]]:
                 run_scrape(logger, bofAJobs),
             ]
         )
-        return [*coJobs, *parJobs, *amexJobs]
+        return [*coJobs, *parJobs, *amexJobs, *bofaJobs]
     except Exception as e:
         logger.error(e)
         return []

@@ -6,7 +6,9 @@ import aiohttp
 from typing import List
 import logging
 
-from .file_types import JobItem
+from .file_types import JobItem, States
+
+states = States()
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +85,13 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                                 try:
                                     country = location.split(",")[2]
                                     if country.lower() in ["us", "united states"]:
+                                        in_US = True
+                                except IndexError:
+                                    state = location.split(",")[1]
+                                    if (
+                                        state in states.abbreviations
+                                        or state in states.states
+                                    ):
                                         in_US = True
                                 except Exception as e:
                                     logger.error(location, e)
