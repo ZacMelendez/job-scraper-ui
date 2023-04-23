@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/zachm/.nvm/versions/node/v16.15.0/bin/node /Users/zachm/.yarn/bin/yarn.js add @types/svelte-lucide
+  /Users/zachm/.nvm/versions/node/v16.15.0/bin/node /Users/zachm/.yarn/bin/yarn.js add -D @types/svelte-tags-input
 
 PATH: 
   /Users/zachm/.nvm/versions/node/v16.15.0/bin:/Users/zachm/.yarn/bin:/Users/zachm/.config/yarn/global/node_modules/.bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/zachm/.nvm/versions/node/v16.15.0/bin:/Users/zachm/.yarn/bin:/Users/zachm/.config/yarn/global/node_modules/.bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/zachm/.cargo/bin
@@ -14,7 +14,7 @@ Platform:
   darwin arm64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fsvelte-lucide: Not found
+  Error: https://registry.yarnpkg.com/@types%2fsvelte-tags-input: Not found
       at Request.params.callback [as _callback] (/Users/zachm/.yarn/lib/cli.js:66145:18)
       at Request.self.callback (/Users/zachm/.yarn/lib/cli.js:140890:22)
       at Request.emit (node:events:527:28)
@@ -87,7 +87,8 @@ npm manifest:
   		"node-fetch": "2",
   		"radix-icons-svelte": "^1.2.1",
   		"sass": "^1.59.3",
-  		"svelte-lucide": "^0.5.2"
+  		"svelte-lucide": "^0.5.2",
+  		"svelte-tags-input": "^5.0.0"
   	}
   }
 
@@ -3309,6 +3310,11 @@ Lockfile:
       magic-string "^0.27.0"
       sorcery "^0.11.0"
       strip-indent "^3.0.0"
+  
+  svelte-tags-input@^5.0.0:
+    version "5.0.0"
+    resolved "https://registry.yarnpkg.com/svelte-tags-input/-/svelte-tags-input-5.0.0.tgz#921a9d65759e32c247b7bde27903410c0c9b2523"
+    integrity sha512-lH0rkSdVcurCEnJBkHG9gTQfpz0gsQmVBzA+TQqSLL1/A0okRsz8lZJzVC20d6Eufkr24b5zHkYzQmrbIaqS/w==
   
   svelte@^3.54.0:
     version "3.57.0"

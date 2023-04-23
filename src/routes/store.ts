@@ -20,6 +20,6 @@ export const userStore = writable<{ userId: string; favorites: string[] }>({
 	userId: ''
 });
 
-export const modalState = writable({
-	opened: false
+export const drawerState = writable({
+	hidden: true
 });

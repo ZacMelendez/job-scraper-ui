@@ -51,6 +51,9 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
+
+		max-height: calc(100vh - 60px);
+		overflow: hidden;
 	}
 
 	header {
@@ -62,6 +65,9 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
+
+		max-height: 60px;
+
 		.logo {
 			display: flex;
 			flex-direction: row;

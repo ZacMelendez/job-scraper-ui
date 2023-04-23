@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { JobFetch } from '../helpers/';
 	import { Drawer, JobItem } from '../components';
-	import { jobList, userStore } from './store';
+	import { drawerState, jobList, userStore } from './store';
 	import { Input, Button, ButtonGroup } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 
 	import { Search, SlidersHorizontal } from 'lucide-svelte';
 	import { onMount } from 'svelte';
-
-	let drawer = true;
 
 	const handleSearch = async () => {
 		const response = await JobFetch({ search: $jobList.jobSearch });
@@ -62,7 +60,7 @@
 	<meta name="description" content="SvelteKit Job Scraper" />
 </svelte:head>
 
-<Drawer hidden1={drawer} />
+<Drawer />
 
 <div class="job-items">
 	<div class="menu-bar">
@@ -72,14 +70,14 @@
 				<Button color="blue" on:click={handleSearch}><Search size={16} /></Button>
 			</ButtonGroup>
 		</div>
-		<!-- <div class="actions">
+		<div class="actions">
 			<Button
 				color="light"
 				on:click={() => {
-					drawer = false;
+					$drawerState.hidden = false;
 				}}><SlidersHorizontal size={16} /></Button
 			>
-		</div> -->
+		</div>
 	</div>
 
 	<ul class="job-list">
@@ -101,9 +99,11 @@
 <style lang="scss">
 	@import '../styles/breakpoints.scss';
 	.job-items {
-		padding: 5px 15px;
+		// padding: 5px 15px;
 		position: relative;
 		width: 100%;
+
+		max-height: calc(100vh - 60px);
 
 		@include sm-max {
 			padding: 0;
@@ -151,12 +151,12 @@
 			}
 		}
 
-		@include sm-max {
-			flex-direction: column;
-			align-items: flex-start;
-			height: auto;
-			gap: 5px;
-		}
+		// @include sm-max {
+		// 	// flex-direction: column;
+		// 	// align-items: flex-start;
+		// 	// height: auto;
+		// 	// gap: 5px;
+		// }
 	}
 
 	// .loading {

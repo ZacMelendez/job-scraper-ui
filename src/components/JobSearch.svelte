@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { JobFetch } from '../helpers';
 	import { formProps } from './store';
 	import { modalState } from '../routes/store';
@@ -54,4 +54,4 @@
 		<Button color="light" on:click={onClear}>Clear</Button>
 		<Button color="light" on:click={onSubmit}>Search</Button>
 	</svelte:fragment>
-</Modal>
+</Modal> -->
