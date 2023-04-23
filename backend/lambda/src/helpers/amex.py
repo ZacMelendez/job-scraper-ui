@@ -1,11 +1,8 @@
 import asyncio
 import ssl
-import sys
-from typing import List, TypeVar, TypedDict
+from typing import List
 import aiohttp
 import logging
-
-from async_googlemaps import AsyncClient
 
 logger = logging.getLogger(__name__)
 

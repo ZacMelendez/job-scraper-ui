@@ -1,14 +1,9 @@
 import asyncio
-import json
 import ssl
-import sys
-import time
-from typing import List, TypeVar, TypedDict
+from typing import List
 from bs4 import BeautifulSoup
 import aiohttp
 import logging
-
-from async_googlemaps import AsyncClient
 
 logger = logging.getLogger(__name__)
 

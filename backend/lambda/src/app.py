@@ -12,6 +12,7 @@ from .helpers import (
     JobItem,
     capOneJobs,
     paramountJobs,
+    bofAJobs,
     put_items,
 )
 
@@ -112,11 +113,13 @@ async def main(logger: logging.Logger) -> List[List[JobItem]]:
         coJobs: List[List[JobItem]]
         parJobs: List[List[JobItem]]
         amexJobs: List[List[JobItem]]
+        bofaJobs: List[List[JobItem]]
         [coJobs, parJobs, amexJobs] = await asyncio.gather(
             *[
                 run_scrape(logger, capOneJobs),
                 run_scrape(logger, paramountJobs),
                 run_scrape(logger, amExJobs),
+                run_scrape(logger, bofAJobs),
             ]
         )
         return [*coJobs, *parJobs, *amexJobs]
