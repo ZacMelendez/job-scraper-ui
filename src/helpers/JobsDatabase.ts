@@ -34,7 +34,8 @@ export const getJobs = async ({
 					// Limit: 200,
 					...(search && {
 						KeyConditionExpression: '#jobType = :type',
-						FilterExpression: 'contains(#jobTitle, :search) OR contains(#jobLocation, :search)',
+						FilterExpression:
+							'contains(#jobTitle, :search) OR contains(#jobLocation, :search) OR contains(#jobCompany, :search)',
 						ExpressionAttributeValues: {
 							':search': { S: decodeURIComponent(search) },
 							':type': { S: 'job' }
@@ -42,7 +43,8 @@ export const getJobs = async ({
 						ExpressionAttributeNames: {
 							'#jobType': 'type',
 							'#jobLocation': 'location',
-							'#jobTitle': 'title'
+							'#jobTitle': 'title',
+							'#jobCompany': 'company'
 						}
 					}),
 					ReturnConsumedCapacity: 'TOTAL'
