@@ -1,5 +1,9 @@
-import { DynamoDBClient, ScanCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
+import {
+	DynamoDBClient,
+	QueryCommand,
+	type QueryCommandOutput,
+	type QueryCommandInput
+} from '@aws-sdk/client-dynamodb';
 import { SECRET_AWS_SECRET, SECRET_AWS_KEY, SECRET_JOBS_TABLE } from '$env/static/private';
 import type { JobItemProps } from '../types';
 
@@ -13,64 +17,67 @@ const clientOptions = {
 
 const client = new DynamoDBClient(clientOptions);
 
-export const getJobs = async ({
-	lastEvalKey,
-	search
-}: {
-	lastEvalKey?: string;
+type ExclusiveStartKey = QueryCommandInput['ExclusiveStartKey'];
+
+type QueryTableOptions = {
 	search?: string;
-}): Promise<JobItemProps[]> => {
+	excludeList?: string[];
+	exclusiveStartKey?: ExclusiveStartKey;
+};
+
+export async function queryTable(options: QueryTableOptions): Promise<JobItemProps[]> {
+	const { search, excludeList, exclusiveStartKey } = options;
+
+	if (exclusiveStartKey && (!('type' in exclusiveStartKey) || !('jobUrl' in exclusiveStartKey))) {
+		throw new Error('Invalid exclusiveStartKey');
+	}
+
+	const filterExpressions = [
+		search
+			? `(contains(#company, :search) OR contains(#location, :search) OR contains(#title, :search))`
+			: ''
+	];
+
+	if (excludeList && excludeList.length > 0) {
+		const excludeExpressions = excludeList.map((s) => `NOT contains(#title, :${s})`);
+		filterExpressions.push(`(${excludeExpressions.join(' AND ')})`);
+	}
+
+	const params: QueryCommandInput = {
+		TableName: SECRET_JOBS_TABLE,
+		KeyConditionExpression: '#type = :jobType',
+		...((excludeList || search) && {
+			FilterExpression: filterExpressions.filter((expr) => !!expr).join(' AND ')
+		}),
+		ExpressionAttributeNames: {
+			'#type': 'type',
+			...((search || excludeList) && { '#title': 'title' }),
+			...(search && { '#company': 'company', '#location': 'location' })
+		},
+		ExpressionAttributeValues: {
+			':jobType': { S: 'job' },
+			...(excludeList ? excludeList.reduce((acc, s) => ({ ...acc, [`:${s}`]: { S: s } }), {}) : {}),
+			...(search ? { ':search': { S: search } } : {})
+		},
+		...(!search && { Limit: 20 }),
+		ExclusiveStartKey: exclusiveStartKey
+	};
+
 	try {
-		const command = search
-			? new QueryCommand({
-					TableName: SECRET_JOBS_TABLE,
-					...(lastEvalKey && {
-						ExclusiveStartKey: {
-							jobUrl: {
-								S: decodeURIComponent(lastEvalKey)
-							}
-						}
-					}),
-					// Limit: 200,
-					...(search && {
-						KeyConditionExpression: '#jobType = :type',
-						FilterExpression:
-							'contains(#jobTitle, :search) OR contains(#jobLocation, :search) OR contains(#jobCompany, :search)',
-						ExpressionAttributeValues: {
-							':search': { S: decodeURIComponent(search) },
-							':type': { S: 'job' }
-						},
-						ExpressionAttributeNames: {
-							'#jobType': 'type',
-							'#jobLocation': 'location',
-							'#jobTitle': 'title',
-							'#jobCompany': 'company'
-						}
-					}),
-					ReturnConsumedCapacity: 'TOTAL'
-			  })
-			: new ScanCommand({
-					TableName: SECRET_JOBS_TABLE,
-					...(lastEvalKey && {
-						ExclusiveStartKey: {
-							jobUrl: {
-								S: decodeURIComponent(lastEvalKey)
-							},
-							type: {
-								S: 'job'
-							}
-						}
-					}),
-					ReturnConsumedCapacity: 'TOTAL',
-					Limit: 20
-			  });
+		const data: QueryCommandOutput = await client.send(new QueryCommand(params));
+		const items: JobItemProps[] =
+			data.Items?.map((item) => ({
+				type: 'job',
+				jobUrl: item.jobUrl.S || '',
+				company: item.company.S || '',
+				job_id: item.job_id.S || '',
+				location: item.location.S || '',
+				title: item.title.S || ''
+			})) || [];
 
-		const Items = await client.send(command);
-
-		const posts = Items?.Items?.map((item) => unmarshall(item));
-		return posts as JobItemProps[];
+		return items;
 	} catch (err) {
 		console.error(err);
 		return [];
 	}
-};
+}

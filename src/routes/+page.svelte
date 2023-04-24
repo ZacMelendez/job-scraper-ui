@@ -7,9 +7,10 @@
 
 	import { Search, SlidersHorizontal } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import { activeFilters } from '../components/filterStore';
 
 	const handleSearch = async () => {
-		const response = await JobFetch({ search: $jobList.jobSearch });
+		const response = await JobFetch({ search: $jobList.jobSearch, exclude: $activeFilters.tags });
 		$jobList.jobs = response?.data;
 		$jobList.filteredJobs = response?.data;
 
@@ -89,7 +90,6 @@
 						`${item.company.toLowerCase().split(' ').join('-')}-${item.job_id}`
 					)}
 					lastFetched={(i + 1) % $jobList.returnedJobCount == 0}
-					search={$jobList.searched ? $jobList.jobSearch : null}
 				/>
 			</li>
 		{/each}

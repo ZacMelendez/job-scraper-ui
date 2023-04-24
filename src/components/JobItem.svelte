@@ -5,27 +5,30 @@
 	import { page } from '$app/stores';
 	import IntersectionObserver from 'svelte-intersection-observer';
 	import { JobFetch } from '../helpers';
+	import { activeFilters } from './filterStore';
 
 	let element: HTMLElement;
 	let intersecting: boolean;
 	export let lastFetched: boolean;
-	export let search: string | null;
 
 	export let job: JobItemProps;
 	export let favorite = false;
 	export const job_id = `${job.company.toLowerCase().split(' ').join('-')}-${job.job_id}`;
 
 	const fetchMoreJobs = async () => {
+		console.log({
+			lastEvalKey: job.jobUrl,
+			search: $jobList.jobSearch,
+			exclude: $activeFilters.tags
+		});
 		const response = await JobFetch({
 			lastEvalKey: job.jobUrl,
-			...(search && { search })
+			search: $jobList.jobSearch,
+			exclude: $activeFilters.tags
 		});
 
 		$jobList.jobs = [...$jobList.jobs, ...(response?.data ? response.data : [])];
 		$jobList.filteredJobs = [...$jobList.filteredJobs, ...(response?.data ? response.data : [])];
-
-		$userStore.favorites = $page.data.session?.user?.favorites || [];
-		$userStore.userId = $page.data.session?.user?.id || '';
 
 		$jobList.returnedJobCount = response?.data.length;
 	};

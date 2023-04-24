@@ -6,18 +6,27 @@ interface FetchResponse {
 
 export default async function JobFetch({
 	lastEvalKey,
-	search
+	search,
+	exclude
 }: {
 	lastEvalKey?: string;
 	search?: string;
+	exclude?: string[];
 }): Promise<FetchResponse> {
 	let url = '/api';
 
-	if (lastEvalKey || search) {
-		url = url.concat('?');
-		url = lastEvalKey ? url.concat(`lastEvalKey=${encodeURIComponent(lastEvalKey)}`) : url;
-		url = search ? url.concat(`search=${encodeURIComponent(search)}`) : url;
+	const queryParams: string[] = [];
+
+	search && search != '' && queryParams.push(`search=${encodeURIComponent(search)}`);
+	exclude &&
+		exclude.toString() != '' &&
+		queryParams.push(`exclude=${encodeURIComponent(exclude.join(','))}`);
+	lastEvalKey && queryParams.push(`lastEvalKey=${encodeURIComponent(lastEvalKey)}`);
+
+	if (queryParams.length > 0) {
+		url = url.concat(`?${queryParams.join('&')}`);
 	}
+
 	try {
 		const response = await fetch(url, {
 			method: 'GET'
