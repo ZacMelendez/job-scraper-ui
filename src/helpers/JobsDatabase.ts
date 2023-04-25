@@ -56,8 +56,6 @@ export async function queryTable(options: QueryTableOptions): Promise<JobItemPro
 		filterExpressions.push(`(${excludeExpressions.join(' AND ')})`);
 	}
 
-	// console.log(filterExpressions.filter((expr) => !!expr).join(' AND '));
-
 	const params: QueryCommandInput = {
 		TableName: SECRET_JOBS_TABLE,
 		KeyConditionExpression: '#type = :jobType',

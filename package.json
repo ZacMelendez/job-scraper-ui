@@ -45,6 +45,7 @@
 		"aws-sdk": "^2.1360.0",
 		"flowbite": "^1.6.5",
 		"flowbite-svelte": "^0.34.9",
+		"lodash": "^4.17.21",
 		"sass": "^1.59.3"
 	}
 }

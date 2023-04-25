@@ -7,15 +7,16 @@
 	import { SlidersHorizontal } from '../components/lucide-icons';
 	import { activeFilters, newFilters } from './filterStore';
 	import { JobFetch, toTitleCase } from '../helpers';
+	import { cloneDeep } from 'lodash';
 
 	let disableApply: boolean;
 	let disableClear: boolean;
 
 	$: {
 		disableApply =
-			$activeFilters.excludeTags.toString() == $newFilters.excludeTags.toString() &&
-			$activeFilters.includeTags.toString() == $newFilters.includeTags.toString() &&
-			$activeFilters.companies.toString() == $newFilters.companies.toString();
+			$activeFilters.excludeTags.toString() === $newFilters.excludeTags.toString() &&
+			$activeFilters.includeTags.toString() === $newFilters.includeTags.toString() &&
+			$activeFilters.companies.toString() === $newFilters.companies.toString();
 	}
 
 	$: {
@@ -24,22 +25,6 @@
 			!$activeFilters.includeTags.length &&
 			!$activeFilters.companies.length;
 	}
-
-	$: {
-		$newFilters.companies = Object.entries(companies)
-			.filter((item) => item[1])
-			.map((item) => {
-				return item[0];
-			});
-	}
-
-	let companies = {
-		'american express': false,
-		'capital one': false,
-		'bank of america': false,
-		paramount: false,
-		rivian: false
-	};
 
 	let transitionParams = {
 		x: -320,
@@ -60,7 +45,7 @@
 	};
 
 	const applyFilters = () => {
-		$activeFilters = { ...$newFilters };
+		$activeFilters = cloneDeep($newFilters);
 		handleSearch();
 		$drawerState.hidden = true;
 	};
@@ -75,13 +60,6 @@
 			excludeTags: [],
 			includeTags: [],
 			companies: []
-		};
-		companies = {
-			'american express': false,
-			'capital one': false,
-			'bank of america': false,
-			paramount: false,
-			rivian: false
 		};
 		handleSearch();
 	};
@@ -112,13 +90,8 @@
 	<Helper class="text-sm mb-2"
 		>Select which companies you would like to search for jobs from.</Helper
 	>
-	{#each Object.keys(companies) as company}
-		<Checkbox
-			on:click={() => {
-				companies[company] = !companies[company];
-			}}
-			value={companies[company]}
-		>
+	{#each ['rivian', 'american express', 'paramount', 'capital one', 'bank of america'] as company (company)}
+		<Checkbox bind:group={$newFilters.companies} value={company}>
 			{toTitleCase(company)}
 		</Checkbox>
 	{/each}
