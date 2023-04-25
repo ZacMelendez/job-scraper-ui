@@ -37,7 +37,8 @@
 		'american express': false,
 		'capital one': false,
 		'bank of america': false,
-		paramount: false
+		paramount: false,
+		rivian: false
 	};
 
 	let transitionParams = {
@@ -79,7 +80,8 @@
 			'american express': false,
 			'capital one': false,
 			'bank of america': false,
-			paramount: false
+			paramount: false,
+			rivian: false
 		};
 		handleSearch();
 	};
