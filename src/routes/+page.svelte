@@ -5,7 +5,7 @@
 	import { Input, Button, P } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 
-	import { SlidersHorizontal } from 'lucide-svelte';
+	import { SlidersHorizontal } from '../components/lucide-icons';
 	import { onMount } from 'svelte';
 
 	const fetchJobs = async () => {

@@ -7,7 +7,7 @@
 
 	import { page } from '$app/stores';
 	import { Button } from 'flowbite-svelte';
-	import { User } from 'lucide-svelte';
+	import { User } from '../components/lucide-icons';
 </script>
 
 <div class="app">
@@ -18,10 +18,12 @@
 		</div>
 		{#if Object.keys($page.data.session || {}).length}
 			<Button color="light" on:click={() => signOut()}
-				><User style="padding-right: 3px;" size={16} />Sign out</Button
+				><User style="margin-right: 5px" size={16} />Sign out</Button
 			>
 		{:else}
-			<Button color="light" on:click={() => signIn('google')}><User size={16} /> Sign In</Button>
+			<Button color="light" on:click={() => signIn('google')}
+				><User style="margin-right: 5px" size={16} /> Sign In</Button
+			>
 		{/if}
 	</header>
 	<main>

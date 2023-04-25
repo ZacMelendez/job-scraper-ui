@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { JobItemProps } from '../types';
-	import { Star, MapPin } from 'lucide-svelte';
+	import { Star, MapPin } from '../components/lucide-icons';
 	import { jobList, userStore } from '../routes/store';
 	import { page } from '$app/stores';
 	import IntersectionObserver from 'svelte-intersection-observer';

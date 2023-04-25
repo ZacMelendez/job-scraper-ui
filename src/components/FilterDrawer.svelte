@@ -4,7 +4,7 @@
 	import { sineIn } from 'svelte/easing';
 	import { drawerState, jobList } from '../routes/store';
 	import TagsInput from './TagsInput.svelte';
-	import { SlidersHorizontal } from 'lucide-svelte';
+	import { SlidersHorizontal } from '../components/lucide-icons';
 	import { activeFilters, newFilters } from './filterStore';
 	import { JobFetch, toTitleCase } from '../helpers';
 

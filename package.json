@@ -11,11 +11,8 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@fontsource/fira-mono": "^4.5.10",
-		"@neoconfetti/svelte": "^1.0.0",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
-		"@types/cookie": "^0.5.1",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.14",
@@ -33,7 +30,6 @@
 		"tailwindcss": "^3.3.1",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
-		"unplugin-icons": "^0.16.1",
 		"vite": "^4.0.0"
 	},
 	"type": "module",
@@ -43,22 +39,12 @@
 		"@aws-sdk/client-dax": "^3.316.0",
 		"@aws-sdk/client-dynamodb": "^3.315.0",
 		"@aws-sdk/util-dynamodb": "^3.315.0",
-		"@popperjs/core": "^2.11.7",
-		"@svelte-drama/suspense": "^0.3.10",
 		"@svelteuidev/composables": "^0.10.0",
 		"@svelteuidev/core": "^0.10.0",
 		"@types/amazon-dax-client": "^1.2.5",
-		"@types/node-fetch": "^2.6.3",
-		"amazon-dax-client": "^1.2.9",
 		"aws-sdk": "^2.1360.0",
-		"classnames": "^2.3.2",
 		"flowbite": "^1.6.5",
 		"flowbite-svelte": "^0.34.9",
-		"lucide-svelte": "^0.162.0",
-		"node-fetch": "2",
-		"radix-icons-svelte": "^1.2.1",
-		"sass": "^1.59.3",
-		"svelte-lucide": "^0.5.2",
-		"svelte-tags-input": "^5.0.0"
+		"sass": "^1.59.3"
 	}
 }
