@@ -9,12 +9,20 @@
 	import { JobFetch, toTitleCase } from '../helpers';
 
 	let disableApply: boolean;
+	let disableClear: boolean;
 
 	$: {
 		disableApply =
 			$activeFilters.excludeTags.toString() == $newFilters.excludeTags.toString() &&
 			$activeFilters.includeTags.toString() == $newFilters.includeTags.toString() &&
 			$activeFilters.companies.toString() == $newFilters.companies.toString();
+	}
+
+	$: {
+		disableClear =
+			!$activeFilters.excludeTags.length &&
+			!$activeFilters.includeTags.length &&
+			!$activeFilters.companies.length;
 	}
 
 	$: {
@@ -25,7 +33,7 @@
 			});
 	}
 
-	const companies = {
+	let companies = {
 		'american express': false,
 		'capital one': false,
 		'bank of america': false,
@@ -55,6 +63,26 @@
 		handleSearch();
 		$drawerState.hidden = true;
 	};
+
+	const handleClear = () => {
+		$activeFilters = {
+			excludeTags: [],
+			includeTags: [],
+			companies: []
+		};
+		$newFilters = {
+			excludeTags: [],
+			includeTags: [],
+			companies: []
+		};
+		companies = {
+			'american express': false,
+			'capital one': false,
+			'bank of america': false,
+			paramount: false
+		};
+		handleSearch();
+	};
 </script>
 
 <Drawer
@@ -73,12 +101,15 @@
 		</h5>
 		<CloseButton on:click={() => ($drawerState.hidden = true)} class="mb-4 dark:text-white" />
 	</div>
-	<Button on:click={applyFilters} disabled={disableApply} style="align-self: flex-end" color="light"
-		>Apply</Button
-	>
+	<div class="flex flex-row w-full justify-between mb-3">
+		<Button on:click={handleClear} disabled={disableClear} color="light">Clear</Button>
+		<Button on:click={applyFilters} disabled={disableApply} color="light">Apply</Button>
+	</div>
 	<TagsInput />
 	<Label class="mt-5 mb-2">Companies</Label>
-	<Helper class="text-sm">Select which companies you would like to search for jobs from.</Helper>
+	<Helper class="text-sm mb-2"
+		>Select which companies you would like to search for jobs from.</Helper
+	>
 	{#each Object.keys(companies) as company}
 		<Checkbox
 			on:click={() => {
