@@ -49,6 +49,8 @@
 <svelte:head>
 	<title>Job Scraper</title>
 	<meta name="description" content="SvelteKit Job Scraper" />
+	<meta name="og:image" content="https://zachoverflow.s3.amazonaws.com/images/og.png" />
+	<meta name="image" content="https://zachoverflow.s3.amazonaws.com/images/og.png" />
 </svelte:head>
 
 <Drawer />
