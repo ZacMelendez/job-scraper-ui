@@ -53,6 +53,7 @@
 	const applyFilters = () => {
 		$activeFilters = { ...$newFilters };
 		handleSearch();
+		$drawerState.hidden = true;
 	};
 </script>
 

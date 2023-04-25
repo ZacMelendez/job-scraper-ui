@@ -2,7 +2,7 @@
 	import { JobFetch } from '../helpers/';
 	import { Drawer, JobItem } from '../components';
 	import { drawerState, jobList, userStore } from './store';
-	import { Input, Button } from 'flowbite-svelte';
+	import { Input, Button, P } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 
 	import { SlidersHorizontal } from 'lucide-svelte';
@@ -70,7 +70,9 @@
 			>
 		</div>
 	</div>
-
+	{#if $jobList.filteredJobs.length > 0}
+		<P class="mt-2">Found {$jobList.filteredJobs.length} jobs</P>
+	{/if}
 	<ul class="job-list">
 		{#each $jobList.filteredJobs as item, i}
 			<li>

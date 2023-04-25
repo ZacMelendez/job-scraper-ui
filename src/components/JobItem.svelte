@@ -89,7 +89,7 @@
 	{#if lastFetched}
 		<IntersectionObserver
 			on:intersect={() => {
-				if ($jobList.searched) return;
+				if ($activeFilters.excludeTags.length > 0 || $activeFilters.includeTags.length > 0) return;
 				fetchMoreJobs();
 			}}
 			once
