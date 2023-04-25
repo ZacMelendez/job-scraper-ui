@@ -69,7 +69,8 @@ async def getJobsOnPage(client: aiohttp.ClientSession, start: int) -> List[JobIt
                         "company": "Bank of America".lower(),
                         "job_id": str(job["jobRequisitionId"]).lower(),
                         "type": "job",
-                        "title": (job["postingTitle"]).lower(),
+                        "title": (job["postingTitle"]),
+                        "search_title": (job["postingTitle"]).lower(),
                         "jobUrl": f"https://careers.bankofamerica.com{url}".lower(),
                         "location": (job["location"]).lower(),
                     }

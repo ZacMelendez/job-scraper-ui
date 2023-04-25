@@ -1,9 +1,19 @@
 import { writable } from 'svelte/store';
 
-export const newFilters = writable<{ tags: string[] }>({
-	tags: []
+interface FilterProps {
+	excludeTags: string[];
+	includeTags: string[];
+	companies: string[];
+}
+
+export const newFilters = writable<FilterProps>({
+	excludeTags: [],
+	includeTags: [],
+	companies: []
 });
 
-export const activeFilters = writable<{ tags: string[] }>({
-	tags: []
+export const activeFilters = writable<FilterProps>({
+	excludeTags: [],
+	includeTags: [],
+	companies: []
 });

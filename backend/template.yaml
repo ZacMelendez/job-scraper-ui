@@ -5,7 +5,6 @@ Description: >
 
   Sample SAM Template for job_scraper
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 30

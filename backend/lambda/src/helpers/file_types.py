@@ -10,6 +10,7 @@ class JobItem(TypedDict):
     jobUrl: str
     location: str
     type: str
+    search_title: str
 
 
 class States:

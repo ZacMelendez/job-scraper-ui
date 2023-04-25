@@ -31,6 +31,8 @@ async def getJobCount(client: aiohttp.ClientSession) -> int:
         if jobs_count_search:
             jobs_count = int(jobs_count_search.text.split(" ")[5])
 
+        logger.info(jobs_count)
+
         return jobs_count
 
 
@@ -84,7 +86,7 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                             if location != "":
                                 try:
                                     country = location.split(",")[2]
-                                    if country.lower() in ["us", "united states"]:
+                                    if "us" in country.lower():
                                         in_US = True
                                 except IndexError:
                                     state = location.split(",")[1]
@@ -102,7 +104,8 @@ async def getJobsOnPage(client: aiohttp.ClientSession, page: int) -> List[JobIte
                                 "company": "Paramount".lower(),
                                 "type": "job".lower(),
                                 "job_id": job_id.lower(),
-                                "title": title.lower(),
+                                "title": title,
+                                "search_title": title.lower(),
                                 "jobUrl": f"https://careers.paramount.com{href}".lower(),
                                 "location": location.lower(),
                             }

@@ -2,21 +2,11 @@
 	import { JobFetch } from '../helpers/';
 	import { Drawer, JobItem } from '../components';
 	import { drawerState, jobList, userStore } from './store';
-	import { Input, Button, ButtonGroup } from 'flowbite-svelte';
+	import { Input, Button } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 
-	import { Search, SlidersHorizontal } from 'lucide-svelte';
+	import { SlidersHorizontal } from 'lucide-svelte';
 	import { onMount } from 'svelte';
-	import { activeFilters } from '../components/filterStore';
-
-	const handleSearch = async () => {
-		const response = await JobFetch({ search: $jobList.jobSearch, exclude: $activeFilters.tags });
-		$jobList.jobs = response?.data;
-		$jobList.filteredJobs = response?.data;
-
-		$jobList.returnedJobCount = response?.data.length;
-		$jobList.searched = true;
-	};
 
 	const fetchJobs = async () => {
 		const response = await JobFetch({});
@@ -66,10 +56,10 @@
 <div class="job-items">
 	<div class="menu-bar">
 		<div class="search-bar">
-			<ButtonGroup class="w-full h-full">
-				<Input placeholder="Search..." bind:value={$jobList.jobSearch} on:input={searchJobs} />
-				<Button color="blue" on:click={handleSearch}><Search size={16} /></Button>
-			</ButtonGroup>
+			<!-- <ButtonGroup class="w-full h-full"> -->
+			<Input placeholder="Narrow down..." bind:value={$jobList.jobSearch} on:input={searchJobs} />
+			<!-- <Button color="blue" on:click={handleSearch}><Search size={16} /></Button> -->
+			<!-- </ButtonGroup> -->
 		</div>
 		<div class="actions">
 			<Button

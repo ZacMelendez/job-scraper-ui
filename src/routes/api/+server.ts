@@ -13,20 +13,20 @@ export async function POST({ request }) {
 }
 
 export async function GET({ url }) {
-	const search = url.searchParams.get('search')?.toLowerCase() ?? undefined;
+	const include = url.searchParams.get('include')?.toLowerCase() ?? undefined;
 	const exclude = url.searchParams.get('exclude')?.toLowerCase() ?? undefined;
+	const companies = url.searchParams.get('companies')?.toLowerCase() ?? undefined;
 	const lastEvalKey = url.searchParams.get('lastEvalKey')?.toLowerCase() ?? undefined;
 
 	const excludeList = exclude?.split(',');
-
-	console.log({ lastEvalKey, search, exclude });
-
-	// const data = await getJobs({ lastEvalKey, search });
+	const includeList = include?.split(',');
+	const companyList = companies?.split(',');
 
 	const data = await queryTable({
-		search: search,
+		includeList,
 		exclusiveStartKey: lastEvalKey ? marshall({ type: 'job', jobUrl: lastEvalKey }) : undefined,
-		excludeList
+		excludeList,
+		companyList
 	});
 
 	return json({ data: data }, { status: 201 });

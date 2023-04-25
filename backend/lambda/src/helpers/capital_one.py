@@ -106,7 +106,8 @@ async def getJobsOnPage(
                             {
                                 "company": "Capital One".lower(),
                                 "job_id": job_id.lower(),
-                                "title": title.lower(),
+                                "title": title,
+                                "search_title": title.lower(),
                                 "jobUrl": f"https://www.capitalonecareers.com{href}".lower(),
                                 "location": location.lower(),
                                 "type": "job",

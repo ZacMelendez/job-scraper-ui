@@ -1,15 +1,36 @@
 <script lang="ts">
-	import { Drawer, Button, CloseButton } from 'flowbite-svelte';
+	// @ts-nocheck
+	import { Drawer, Button, CloseButton, Checkbox, Label, Helper } from 'flowbite-svelte';
 	import { sineIn } from 'svelte/easing';
 	import { drawerState, jobList } from '../routes/store';
 	import TagsInput from './TagsInput.svelte';
 	import { SlidersHorizontal } from 'lucide-svelte';
 	import { activeFilters, newFilters } from './filterStore';
-	import { JobFetch } from '../helpers';
+	import { JobFetch, toTitleCase } from '../helpers';
 
 	let enableApply: boolean;
 
-	$: enableApply = $activeFilters.tags.toString() == $newFilters.tags.toString();
+	$: {
+		enableApply =
+			$activeFilters.excludeTags.toString() == $newFilters.excludeTags.toString() &&
+			$activeFilters.includeTags.toString() == $newFilters.includeTags.toString() &&
+			$activeFilters.companies.toString() == $newFilters.companies.toString();
+	}
+
+	$: {
+		$newFilters.companies = Object.entries(companies)
+			.filter((item) => item[1])
+			.map((item) => {
+				return item[0];
+			});
+	}
+
+	const companies = {
+		'american express': false,
+		'capital one': false,
+		'bank of america': false,
+		paramount: false
+	};
 
 	let transitionParams = {
 		x: -320,
@@ -18,7 +39,11 @@
 	};
 
 	const handleSearch = async () => {
-		const response = await JobFetch({ search: $jobList.jobSearch, exclude: $activeFilters.tags });
+		const response = await JobFetch({
+			exclude: $activeFilters.excludeTags,
+			include: $activeFilters.includeTags,
+			companies: $activeFilters.companies
+		});
 		$jobList.jobs = response?.data;
 		$jobList.filteredJobs = response?.data;
 
@@ -26,7 +51,7 @@
 	};
 
 	const applyFilters = () => {
-		$activeFilters.tags = $newFilters.tags;
+		$activeFilters = $newFilters;
 		handleSearch();
 	};
 </script>
@@ -51,4 +76,16 @@
 		>Apply</Button
 	>
 	<TagsInput />
+	<Label class="mt-5 mb-2">Companies</Label>
+	<Helper class="text-sm">Select which companies you would like to search for jobs from.</Helper>
+	{#each Object.keys(companies) as company}
+		<Checkbox
+			on:click={() => {
+				companies[company] = !companies[company];
+			}}
+			value={companies[company]}
+		>
+			{toTitleCase(company)}
+		</Checkbox>
+	{/each}
 </Drawer>

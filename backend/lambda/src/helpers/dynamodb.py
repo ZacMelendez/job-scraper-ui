@@ -29,6 +29,7 @@ async def put_items(jobs: List[JobItem]):
     session = aioboto3.Session(region_name="us-east-1")
     async with session.resource("dynamodb") as dynamodb:
         table = await dynamodb.Table(os.environ.get("JOBS_TABLE") or "")
+
         async with table.batch_writer() as batch_writer:
             for job in jobs:
                 await batch_writer.put_item(Item=job)

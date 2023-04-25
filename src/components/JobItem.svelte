@@ -4,7 +4,7 @@
 	import { jobList, userStore } from '../routes/store';
 	import { page } from '$app/stores';
 	import IntersectionObserver from 'svelte-intersection-observer';
-	import { JobFetch } from '../helpers';
+	import { JobFetch, toTitleCase } from '../helpers';
 	import { activeFilters } from './filterStore';
 
 	let element: HTMLElement;
@@ -16,15 +16,10 @@
 	export const job_id = `${job.company.toLowerCase().split(' ').join('-')}-${job.job_id}`;
 
 	const fetchMoreJobs = async () => {
-		console.log({
-			lastEvalKey: job.jobUrl,
-			search: $jobList.jobSearch,
-			exclude: $activeFilters.tags
-		});
 		const response = await JobFetch({
 			lastEvalKey: job.jobUrl,
-			search: $jobList.jobSearch,
-			exclude: $activeFilters.tags
+			exclude: $activeFilters.excludeTags,
+			include: $activeFilters.includeTags
 		});
 
 		$jobList.jobs = [...$jobList.jobs, ...(response?.data ? response.data : [])];
@@ -61,12 +56,6 @@
 			}
 		});
 	};
-
-	const toTitleCase = (str: string) => {
-		return str.replace(/\w\S*/g, (txt: string) => {
-			return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-		});
-	};
 </script>
 
 <div class="card" bind:this={element}>
@@ -82,7 +71,7 @@
 
 	<a target="_blank" href={job.jobUrl} rel="noreferrer" class="job-text">
 		<h3 class="mb-2 text-base md:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-			{toTitleCase(job.title)}
+			{job.title}
 		</h3>
 		<p class="text-sm md:font-normal text-gray-700 dark:text-gray-400 leading-tight">
 			{toTitleCase(job.company)}
