@@ -8,10 +8,10 @@
 	import { activeFilters, newFilters } from './filterStore';
 	import { JobFetch, toTitleCase } from '../helpers';
 
-	let enableApply: boolean;
+	let disableApply: boolean;
 
 	$: {
-		enableApply =
+		disableApply =
 			$activeFilters.excludeTags.toString() == $newFilters.excludeTags.toString() &&
 			$activeFilters.includeTags.toString() == $newFilters.includeTags.toString() &&
 			$activeFilters.companies.toString() == $newFilters.companies.toString();
@@ -51,7 +51,7 @@
 	};
 
 	const applyFilters = () => {
-		$activeFilters = $newFilters;
+		$activeFilters = { ...$newFilters };
 		handleSearch();
 	};
 </script>
@@ -72,7 +72,7 @@
 		</h5>
 		<CloseButton on:click={() => ($drawerState.hidden = true)} class="mb-4 dark:text-white" />
 	</div>
-	<Button on:click={applyFilters} disabled={enableApply} style="align-self: flex-end" color="light"
+	<Button on:click={applyFilters} disabled={disableApply} style="align-self: flex-end" color="light"
 		>Apply</Button
 	>
 	<TagsInput />
